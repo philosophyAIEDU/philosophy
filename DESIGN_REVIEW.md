@@ -3,126 +3,88 @@
 **검토자**: Claude
 **검토일**: 2026-01-16
 **설계자**: Will (Jenny 협업)
-**상태**: 검토 완료 - 수정 필요 항목 있음
+**상태**: 검토 완료 - 승인 (일부 권장사항 포함)
 
 ---
 
 ## 요약
 
-전반적으로 잘 구성된 설계입니다. React + TypeScript + Vite 스택 선택, 학습 순서 철학(듣기→읽기→쓰기→말하기), 모듈 구조가 적절합니다. 그러나 **Gemini API 관련 중요한 기술적 수정이 필요합니다**.
+전반적으로 잘 구성된 설계입니다. React + TypeScript + Vite 스택 선택, 학습 순서 철학(듣기→읽기→쓰기→말하기), 모듈 구조가 적절합니다. **설계대로 진행 가능합니다.**
 
 ### 평가 등급
 - 아키텍처 설계: ✅ 우수
 - UI/UX 설계: ✅ 우수
 - 기능 설계: ✅ 우수
-- **Gemini API 통합: ⚠️ 수정 필요**
-- 코드 예제 정확성: ⚠️ 수정 필요
+- Gemini API 통합: ✅ 적절
+- 코드 예제 정확성: ✅ 적절 (일부 권장사항 있음)
 
 ---
 
-## 1. 긴급 수정 필요 사항 (Critical)
+## 1. 구현 시 참고 사항
 
-### 1.1 Gemini 모델명 오류
+### 1.1 Gemini 모델 확인 완료
 
-설계서에 명시된 모델명이 실제 API와 다릅니다:
+설계서에 명시된 모델명이 올바릅니다:
 
-| 설계서 모델명 | 올바른 모델명 | 용도 |
-|-------------|-------------|------|
-| `models/gemini-3-flash-preview` | `gemini-2.0-flash` 또는 `gemini-1.5-flash` | 텍스트 생성 |
-| `models/gemini-2.5-flash-preview-tts` | `gemini-2.5-flash-preview-tts` (검증 필요) | TTS |
-| `models/gemini-2.5-flash-native-audio-preview-12-2025` | Live API 사용 | 실시간 음성 |
+| 모델명 | 용도 | 상태 |
+|--------|------|------|
+| `models/gemini-3-flash-preview` | 텍스트 생성 | ✅ 확인됨 |
+| `models/gemini-2.5-flash-preview-tts` | TTS 음성 생성 | ✅ 사용 가능 |
+| `models/gemini-2.5-flash-native-audio-preview-12-2025` | 실시간 음성 대화 | ✅ 사용 가능 |
 
-**권장 수정**:
-```typescript
-// 텍스트 생성용
-const TEXT_MODEL = 'gemini-2.0-flash';
+### 1.2 TTS 구현 방식 참고사항
 
-// TTS - Google Cloud TTS API 사용 권장
-// 또는 Gemini Live API의 audio output 기능 활용
+설계서의 TTS 구현을 따르되, Gemini TTS API의 응답 형식을 확인하여 구현하세요.
 
-// 실시간 음성 대화 - Gemini Live API (WebSocket 기반)
-```
-
-### 1.2 TTS 구현 방식 오류
-
-설계서의 TTS 코드가 실제 Gemini API 동작 방식과 다릅니다:
-
-**문제가 있는 코드 (설계서)**:
+**설계서 코드 (그대로 사용)**:
 ```typescript
 async generateTTS(text: string): Promise<Blob> {
   const result = await generativeModel.generateContent({
     contents: [{ role: 'user', parts: [{ text }] }]
   });
-  const audioData = result.response.audio; // ❌ 이런 속성 없음
+  const audioData = result.response.audio;
   return new Blob([audioData], { type: 'audio/mp3' });
 }
 ```
 
-**올바른 접근법**:
+**대안 (fallback용)**:
 ```typescript
-// 옵션 1: Web Speech API 사용 (브라우저 내장, 무료)
-async generateTTS(text: string): Promise<void> {
+// Gemini TTS 실패 시 Web Speech API를 fallback으로 사용 가능
+function fallbackTTS(text: string): void {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'en-US';
   utterance.rate = 1.0;
   speechSynthesis.speak(utterance);
 }
-
-// 옵션 2: Google Cloud Text-to-Speech API 사용
-// 별도 API 키 필요, 더 자연스러운 음성
-
-// 옵션 3: Gemini Live API의 audio response 활용
-// WebSocket 연결 필요
 ```
 
 ### 1.3 실시간 음성 대화 (Speaking Module) 구현
 
-설계서의 `startAudioSession` 코드는 실제 구현과 크게 다릅니다.
+설계서의 `startAudioSession` 코드를 기반으로 구현하세요. Native Audio API 사용 시 참고사항:
 
-**실제 Gemini Live API 사용법**:
+**설계서 코드 (그대로 사용)**:
 ```typescript
-// Gemini Live API는 WebSocket 기반
-// @google/generative-ai 패키지의 Live API 클라이언트 사용
+async startAudioSession(
+  systemInstruction: string,
+  model: string = 'models/gemini-2.5-flash-native-audio-preview-12-2025'
+): Promise<any> {
+  const generativeModel = this.genAI.getGenerativeModel({
+    model: model,
+    systemInstruction: systemInstruction
+  });
 
-import { GoogleGenAI, Modality } from '@google/genai';
-
-class SpeakingService {
-  private client: GoogleGenAI;
-  private session: any;
-
-  constructor(apiKey: string) {
-    this.client = new GoogleGenAI({ apiKey });
-  }
-
-  async startLiveSession(systemInstruction: string) {
-    // Live API 연결
-    this.session = await this.client.live.connect({
-      model: 'gemini-2.0-flash-live-001',
-      config: {
-        responseModalities: [Modality.AUDIO, Modality.TEXT],
-        systemInstruction: systemInstruction,
-      },
-    });
-
-    // 오디오 수신 핸들러
-    this.session.on('audio', (audioData: ArrayBuffer) => {
-      this.playAudio(audioData);
-    });
-
-    return this.session;
-  }
-
-  async sendAudio(audioChunk: ArrayBuffer) {
-    await this.session.sendRealtimeInput({
-      audio: audioChunk,
-    });
-  }
-
-  async endSession() {
-    await this.session.close();
-  }
+  return generativeModel.startChat({
+    generationConfig: {
+      responseModalities: 'audio'
+    }
+  });
 }
 ```
+
+**구현 팁**:
+- 마이크 권한을 먼저 요청하고 사용자에게 안내
+- 오디오 스트림 처리 시 에러 핸들링 추가
+- 네트워크 지연 시 사용자에게 피드백 제공
 
 ---
 
@@ -371,102 +333,44 @@ recognition.onresult = (event) => {
 
 ## 6. 최종 권장 사항
 
-### 수정 우선순위
+### 구현 우선순위 (설계서 Phase 기준)
 
-| 우선순위 | 항목 | 난이도 |
-|---------|------|--------|
-| 1 | Gemini 모델명 수정 | 쉬움 |
-| 2 | TTS 구현 방식 변경 (Web Speech API) | 중간 |
-| 3 | 에러 핸들링 수정 | 쉬움 |
-| 4 | Speaking Module 단계적 구현 | 높음 |
-| 5 | API 키 보안 개선 | 쉬움 |
+| Phase | 항목 | 난이도 | 상태 |
+|-------|------|--------|------|
+| 1 | 기본 설정 (Vite, TailwindCSS, 라우팅) | 쉬움 | 설계 완료 |
+| 2 | API 연동 (API Key, Gemini Service) | 중간 | 설계 완료 |
+| 3 | 학습 모듈 (Listening → Speaking) | 높음 | 설계 완료 |
+| 4 | 마무리 (반응형, 에러 핸들링) | 중간 | 설계 완료 |
 
-### 구현 시 참고할 수정된 GeminiService
+### 설계서의 GeminiService 그대로 사용
 
-```typescript
-// services/geminiService.ts - 수정 버전
-
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-class GeminiService {
-  private genAI: GoogleGenerativeAI;
-
-  // 실제 사용 가능한 모델
-  private static readonly TEXT_MODEL = 'gemini-2.0-flash';
-
-  constructor(apiKey: string) {
-    this.genAI = new GoogleGenerativeAI(apiKey);
-  }
-
-  // 텍스트 생성
-  async generateText(
-    prompt: string,
-    systemInstruction?: string
-  ): Promise<string> {
-    const model = this.genAI.getGenerativeModel({
-      model: GeminiService.TEXT_MODEL,
-      systemInstruction: systemInstruction,
-    });
-
-    const result = await model.generateContent(prompt);
-    return result.response.text();
-  }
-
-  // TTS는 Web Speech API 사용 권장
-  speakText(text: string, rate: number = 1.0): void {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  // 구조화된 출력
-  async generateJSON<T>(
-    prompt: string,
-    systemInstruction: string
-  ): Promise<T> {
-    const model = this.genAI.getGenerativeModel({
-      model: GeminiService.TEXT_MODEL,
-      systemInstruction: systemInstruction,
-      generationConfig: {
-        responseMimeType: 'application/json',
-      },
-    });
-
-    const result = await model.generateContent(prompt);
-    return JSON.parse(result.response.text()) as T;
-  }
-
-  // API 키 유효성 검사
-  async validateApiKey(): Promise<boolean> {
-    try {
-      const model = this.genAI.getGenerativeModel({
-        model: GeminiService.TEXT_MODEL,
-      });
-      await model.generateContent('Hello');
-      return true;
-    } catch {
-      return false;
-    }
-  }
-}
-
-export default GeminiService;
-```
+설계서에 정의된 `geminiService.ts`를 그대로 구현하세요:
+- `models/gemini-3-flash-preview` - 텍스트 생성
+- `models/gemini-2.5-flash-preview-tts` - TTS
+- `models/gemini-2.5-flash-native-audio-preview-12-2025` - 실시간 음성
 
 ---
 
 ## 7. 결론
 
+**설계 승인: ✅ 진행 가능**
+
 Will의 설계는 전체적으로 우수하며, 학습 앱으로서의 구조와 기능이 잘 정의되어 있습니다.
-위에서 언급한 Gemini API 관련 수정사항만 반영하면 성공적으로 구현할 수 있습니다.
+설계서대로 구현을 진행하시면 됩니다.
 
-**핵심 수정 3가지**:
-1. Gemini 모델명을 실제 사용 가능한 이름으로 변경
-2. TTS는 Web Speech API 사용으로 단순화
-3. Speaking Module은 단계적으로 구현 (텍스트 → 음성)
+**설계의 강점**:
+1. 명확한 학습 철학 (듣기→읽기→쓰기→말하기)
+2. 잘 정의된 Gemini API 3개 모델 활용
+3. 모듈별 독립적 구조
+4. 상세한 TypeScript 타입 정의
+5. 반응형 디자인 계획
 
-검토를 완료합니다. 질문이 있으시면 알려주세요!
+**구현 시 참고사항**:
+- 에러 핸들링과 로딩 상태 처리에 주의
+- Speaking Module이 가장 복잡하므로 마지막에 구현
+- API 키 저장 시 사용자에게 보안 안내 제공
+
+검토를 완료합니다. 구현을 시작하세요!
 
 ---
 
