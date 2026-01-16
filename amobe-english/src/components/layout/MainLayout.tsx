@@ -1,24 +1,19 @@
 import React, { useState, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { useApp } from '../../contexts/AppContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  currentPath?: string;
-  onNavigate?: (path: string) => void;
-  onSettingsClick?: () => void;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({
-  children,
-  currentPath = '/',
-  onNavigate,
-  onSettingsClick,
-}) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { state } = useApp();
   const { darkMode } = state;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleToggleSidebar = useCallback(() => {
     setIsSidebarOpen((prev) => !prev);
@@ -28,11 +23,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({
     setIsSidebarOpen(false);
   }, []);
 
+  const handleNavigate = useCallback((path: string) => {
+    navigate(path);
+  }, [navigate]);
+
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-950 ${darkMode ? 'dark' : ''}`}>
       {/* Header */}
       <Header
-        onSettingsClick={onSettingsClick}
         onToggleSidebar={handleToggleSidebar}
       />
 
@@ -40,8 +38,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({
       <Sidebar
         isOpen={isSidebarOpen}
         onClose={handleCloseSidebar}
-        currentPath={currentPath}
-        onNavigate={onNavigate}
+        currentPath={location.pathname}
+        onNavigate={handleNavigate}
       />
 
       {/* Main content area */}
