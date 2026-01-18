@@ -1,6 +1,5 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import Header from './Header';
 import Sidebar from './Sidebar';
 import { useApp } from '../../contexts/AppContext';
 
@@ -15,9 +14,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleToggleSidebar = useCallback(() => {
-    setIsSidebarOpen((prev) => !prev);
-  }, []);
+
 
   const handleCloseSidebar = useCallback(() => {
     setIsSidebarOpen(false);
@@ -29,10 +26,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className={`min-h-screen bg-primary-950 font-sans text-primary-50 ${darkMode ? 'dark' : ''} selection:bg-accent-gold selection:text-primary-950`}>
-      {/* Header */}
-      <Header
-        onToggleSidebar={handleToggleSidebar}
-      />
+
 
       {/* Sidebar - Positioned differently in new layout */}
       <div className="flex h-screen overflow-hidden">

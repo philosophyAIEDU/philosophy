@@ -84,110 +84,78 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentPath = '/',
   onNavigate,
 }) => {
-  useApp(); // Access app context for future features
+  useApp();
 
   const handleNavClick = (path: string) => {
     if (onNavigate) {
       onNavigate(path);
     }
-    // Close sidebar on mobile after navigation
     if (window.innerWidth < 1024) {
       onClose();
     }
   };
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return currentPath === '/';
-    }
+    if (path === '/') return currentPath === '/';
     return currentPath.startsWith(path);
   };
 
   return (
     <>
-      {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-primary-950/50 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           onClick={onClose}
-          aria-hidden="true"
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 lg:top-auto lg:relative z-40 h-full lg:h-auto w-72
-          bg-white/50 dark:bg-primary-900/50 backdrop-blur-xl border-r border-primary-200 dark:border-primary-800
+          fixed top-0 lg:top-auto lg:relative z-40 h-full lg:h-auto w-64
+          bg-navy-card border-r border-gray-700
           transform transition-transform duration-500 cubic-bezier(0.4, 0, 0.2, 1)
-          lg:translate-x-0 pt-20 lg:pt-0
+          lg:translate-x-0 flex flex-col p-6
           ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
       >
-        {/* Mobile close button */}
         <div className="lg:hidden absolute top-6 right-4">
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors text-primary-500"
-            aria-label="Close sidebar"
-          >
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-white">
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="px-4 py-8">
-          <ul className="space-y-2">
-            {navItems.map((item) => {
-              const active = isActive(item.path);
-              return (
-                <li key={item.id}>
-                  <button
-                    onClick={() => handleNavClick(item.path)}
-                    className={`
-                      w-full flex items-center gap-4 px-6 py-4 rounded-xl
-                      transition-all duration-300 group relative overflow-hidden
-                      ${active
-                        ? 'bg-gradient-to-r from-primary-900 to-primary-800 dark:from-primary-100 dark:to-primary-200 text-white dark:text-primary-900 shadow-lg shadow-primary-900/10'
-                        : 'hover:bg-primary-100 dark:hover:bg-primary-800/50 text-primary-600 dark:text-primary-400'
-                      }
-                    `}
-                  >
-                    <span
-                      className={`
-                        flex-shrink-0 transition-colors duration-300
-                        ${active
-                          ? 'text-accent-gold'
-                          : 'text-primary-400 dark:text-primary-500 group-hover:text-primary-600 dark:group-hover:text-primary-300'
-                        }
-                      `}
-                    >
-                      {item.icon}
-                    </span>
-                    <span className="font-medium text-base tracking-wide relative z-10">
-                      {item.label}
-                    </span>
+        <div className="flex items-center gap-3 mb-10 text-xl font-serif font-bold text-white">
+          <div className="w-8 h-8 bg-accent-blue rounded-lg"></div>
+          Amobe
+        </div>
 
-                    {/* Active Indicator Line */}
-                    {active && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-gold/80" />
-                    )}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+        <nav className="flex-1 space-y-2 overflow-y-auto">
+          {navItems.map((item) => {
+            const active = isActive(item.path);
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavClick(item.path)}
+                className={`
+                    w-full flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all
+                    ${active
+                    ? 'bg-gray-700/50 text-white shadow-sm'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                  }
+                  `}
+              >
+                <span className="flex-shrink-0">
+                  {item.icon}
+                </span>
+                <span className="font-medium text-sm">{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
-        {/* Bottom section - version info */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 border-t border-primary-200 dark:border-primary-800">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs font-semibold text-primary-400 uppercase tracking-widest">System Online</span>
-          </div>
-          <p className="text-xs text-primary-400 dark:text-primary-500 text-center font-serif italic">
-            Amobe English v1.0.0
-          </p>
+        <div className="text-xs text-green-400 flex items-center gap-2 mt-auto pt-6 border-t border-gray-800">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          SYSTEM ONLINE
         </div>
       </aside>
     </>
