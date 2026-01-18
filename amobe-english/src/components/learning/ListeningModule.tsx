@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../../contexts/AppContext';
 import { useGemini } from '../../hooks/useGemini';
 import Button from '../common/Button';
-import Card from '../common/Card';
+
 import LoadingSpinner from '../common/LoadingSpinner';
 import { UserLevel, ListeningContent } from '../../types/learning';
 
@@ -212,58 +212,59 @@ const ListeningModule: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen p-4 md:p-6 lg:p-8 animate-fade-in text-white">
+      <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
-            <span>돌아가기</span>
+            <span>Back to Dashboard</span>
           </button>
-          <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
+          <div className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-full">
             <Headphones className="w-4 h-4" />
-            <span className="font-medium">듣기 연습</span>
+            <span className="font-medium">Listening Practice</span>
           </div>
         </div>
 
         {/* Main Content Card */}
-        <Card className="overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
-            <h2 className="text-xl font-bold mb-2">받아쓰기 연습</h2>
-            <p className="opacity-90">
-              음성을 듣고 들은 내용을 입력해보세요.
-              {userLevel === 'beginner' && ' (초급 - 간단한 문장)'}
-              {userLevel === 'intermediate' && ' (중급 - 일상 대화)'}
-              {userLevel === 'advanced' && ' (고급 - 복잡한 문장)'}
+        <div className="bg-navy-card rounded-2xl border border-gray-700 overflow-hidden shadow-xl">
+          <div className="bg-gradient-to-r from-accent-blue/20 to-accent-blue/10 p-6 border-b border-gray-700">
+            <h2 className="text-2xl font-serif font-bold text-white mb-2">Dictation Practice</h2>
+            <p className="text-gray-400">
+              Listen to the audio and type what you hear.
+              {userLevel === 'beginner' && ' (Beginner - Simple Sentences)'}
+              {userLevel === 'intermediate' && ' (Intermediate - Daily Conversation)'}
+              {userLevel === 'advanced' && ' (Advanced - Complex Expressions)'}
             </p>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-6 space-y-8">
             {/* Loading State */}
             {(isLoading || isGenerating) && (
               <div className="flex flex-col items-center justify-center py-12">
-                <LoadingSpinner size="lg" text="콘텐츠 생성 중..." />
+                <LoadingSpinner size="lg" text="Generating content..." />
               </div>
             )}
 
             {/* Error State */}
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                <div className="flex items-center gap-2 text-red-800">
+              <div className="bg-red-900/20 border border-red-800 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-red-400">
                   <XCircle className="w-5 h-5" />
-                  <span className="font-medium">오류가 발생했습니다</span>
+                  <span className="font-medium">An error occurred</span>
                 </div>
-                <p className="text-red-600 mt-2 text-sm">{error}</p>
+                <p className="text-red-300 mt-2 text-sm">{error}</p>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={generateContent}
-                  className="mt-3"
+                  className="mt-3 border-red-700 text-red-300 hover:bg-red-900/50"
                 >
-                  다시 시도
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Retry
                 </Button>
               </div>
             )}
@@ -272,18 +273,17 @@ const ListeningModule: React.FC = () => {
             {currentContent && !isLoading && !isGenerating && (
               <>
                 {/* Audio Controls */}
-                <div className="bg-gray-100 rounded-2xl p-6">
-                  <div className="flex flex-col items-center gap-4">
+                <div className="bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
+                  <div className="flex flex-col items-center gap-6">
                     {/* Play/Pause Button */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-6">
                       <button
                         onClick={() => setIsMuted(!isMuted)}
-                        className={`p-3 rounded-full transition-colors ${
-                          isMuted
-                            ? 'bg-gray-200 text-gray-500'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                        title={isMuted ? '음소거 해제' : '음소거'}
+                        className={`p-3 rounded-full transition-colors ${isMuted
+                          ? 'bg-gray-700 text-gray-500'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                        title={isMuted ? 'Unmute' : 'Mute'}
                       >
                         {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                       </button>
@@ -291,49 +291,48 @@ const ListeningModule: React.FC = () => {
                       <button
                         onClick={handlePlay}
                         disabled={isMuted}
-                        className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
-                          isMuted
-                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            : isPlaying
-                            ? 'bg-blue-600 text-white hover:bg-blue-700'
-                            : 'bg-blue-500 text-white hover:bg-blue-600'
-                        }`}
+                        className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95 ${isMuted
+                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                          : isPlaying
+                            ? 'bg-accent-blue text-white shadow-accent-blue/40'
+                            : 'bg-accent-blue/90 text-white hover:bg-accent-blue shadow-accent-blue/30'
+                          }`}
                       >
                         {isPlaying ? (
-                          <Pause className="w-8 h-8" />
+                          <Pause className="w-10 h-10" />
                         ) : (
-                          <Play className="w-8 h-8 ml-1" />
+                          <Play className="w-10 h-10 ml-1" />
                         )}
                       </button>
 
                       <button
                         onClick={handleReplay}
                         disabled={isMuted}
-                        className={`p-3 rounded-full transition-colors ${
-                          isMuted
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                        }`}
-                        title="다시 듣기"
+                        className={`p-3 rounded-full transition-colors ${isMuted
+                          ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                          }`}
+                        title="Replay"
                       >
                         <RotateCcw className="w-5 h-5" />
                       </button>
                     </div>
 
                     {/* Speed Control */}
-                    <div className="flex items-center gap-2">
-                      <Gauge className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-500 mr-2">재생 속도:</span>
+                    <div className="flex items-center gap-3 bg-gray-900/50 p-1.5 rounded-lg border border-gray-700">
+                      <div className="flex items-center gap-2 px-2">
+                        <Gauge className="w-4 h-4 text-gray-400" />
+                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Speed</span>
+                      </div>
                       <div className="flex gap-1">
                         {speedButtons.map((btn) => (
                           <button
                             key={btn.value}
                             onClick={() => handleSpeedChange(btn.value)}
-                            className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
-                              playbackSpeed === btn.value
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                            }`}
+                            className={`px-3 py-1 text-xs font-bold rounded hover:bg-gray-700 transition-colors ${playbackSpeed === btn.value
+                              ? 'bg-accent-blue text-white shadow-sm'
+                              : 'text-gray-400 hover:text-white'
+                              }`}
                           >
                             {btn.label}
                           </button>
@@ -342,63 +341,65 @@ const ListeningModule: React.FC = () => {
                     </div>
 
                     {/* Attempts Counter */}
-                    <p className="text-sm text-gray-500">
-                      시도 횟수: {attemptsCount}회
+                    <p className="text-xs text-gray-500 font-mono">
+                      ATTEMPTS: {attemptsCount}
                     </p>
                   </div>
                 </div>
 
                 {/* Hint Section */}
                 {showHint && (
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                    <div className="flex items-center gap-2 text-yellow-800 mb-2">
+                  <div className="bg-yellow-900/10 border border-yellow-700/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 text-yellow-500 mb-2">
                       <Lightbulb className="w-5 h-5" />
-                      <span className="font-medium">힌트</span>
+                      <span className="font-medium font-serif">Hint</span>
                     </div>
-                    <p className="text-yellow-700 font-mono">{getHint()}</p>
+                    <p className="text-yellow-200/80 font-mono tracking-widest">{getHint()}</p>
                   </div>
                 )}
 
                 {/* Input Section */}
                 <div className="space-y-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    들은 내용을 입력하세요
+                  <label className="block text-sm font-medium text-gray-400 ml-1">
+                    Type what you hear
                   </label>
                   <textarea
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
-                    placeholder="영어로 받아쓴 내용을 입력하세요..."
+                    placeholder="Type the English sentence you heard..."
                     rows={3}
                     disabled={result?.isCorrect}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full px-5 py-4 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-blue focus:border-accent-blue transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed text-white placeholder-gray-500 text-lg"
                   />
 
                   <div className="flex flex-wrap gap-3">
                     <Button
                       onClick={handleSubmit}
                       disabled={!userInput.trim() || result?.isCorrect}
-                      className="flex-1 sm:flex-none"
+                      className="flex-1 sm:flex-none bg-accent-blue hover:bg-blue-600 text-white"
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      제출하기
+                      Submit Answer
                     </Button>
 
                     {!showHint && !result?.isCorrect && (
                       <Button
                         variant="outline"
                         onClick={() => setShowHint(true)}
+                        className="border-gray-600 text-gray-300 hover:bg-gray-800"
                       >
                         <Lightbulb className="w-4 h-4 mr-2" />
-                        힌트 보기
+                        Show Hint
                       </Button>
                     )}
 
                     <Button
                       variant="secondary"
                       onClick={handleNextContent}
+                      className="bg-gray-700 text-white hover:bg-gray-600"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
-                      새 문장
+                      New Sentence
                     </Button>
                   </div>
                 </div>
@@ -406,41 +407,47 @@ const ListeningModule: React.FC = () => {
                 {/* Result Section */}
                 {result && (
                   <div
-                    className={`rounded-xl p-6 ${
-                      result.isCorrect
-                        ? 'bg-green-50 border border-green-200'
-                        : 'bg-red-50 border border-red-200'
-                    }`}
+                    className={`rounded-xl p-6 border ${result.isCorrect
+                      ? 'bg-green-900/10 border-green-800/30'
+                      : 'bg-red-900/10 border-red-800/30'
+                      }`}
                   >
-                    <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center gap-3 mb-4">
                       {result.isCorrect ? (
                         <>
-                          <CheckCircle className="w-6 h-6 text-green-600" />
-                          <span className="text-lg font-bold text-green-800">정답입니다!</span>
+                          <div className="p-2 bg-green-500/20 rounded-full">
+                            <CheckCircle className="w-6 h-6 text-green-400" />
+                          </div>
+                          <div>
+                            <span className="text-lg font-bold text-green-400 block">Correct!</span>
+                            <span className="text-sm text-green-400/70">Great job listening.</span>
+                          </div>
                         </>
                       ) : (
                         <>
-                          <XCircle className="w-6 h-6 text-red-600" />
-                          <span className="text-lg font-bold text-red-800">
-                            다시 시도해보세요 (정확도: {Math.round(result.accuracy)}%)
-                          </span>
+                          <div className="p-2 bg-red-500/20 rounded-full">
+                            <XCircle className="w-6 h-6 text-red-400" />
+                          </div>
+                          <div>
+                            <span className="text-lg font-bold text-red-400 block">Try Again</span>
+                            <span className="text-sm text-red-400/70">Accuracy: {Math.round(result.accuracy)}%</span>
+                          </div>
                         </>
                       )}
                     </div>
 
                     {/* Highlighted Words */}
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-sm font-medium text-gray-700 mb-2">내 답안:</p>
-                        <div className="flex flex-wrap gap-1">
+                    <div className="space-y-4">
+                      <div className="bg-black/20 rounded-lg p-4">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Your Answer:</p>
+                        <div className="flex flex-wrap gap-1.5 text-lg">
                           {result.highlights.map((highlight, index) => (
                             <span
                               key={index}
-                              className={`px-2 py-1 rounded ${
-                                highlight.isCorrect
-                                  ? 'bg-green-200 text-green-800'
-                                  : 'bg-red-200 text-red-800 line-through'
-                              }`}
+                              className={`px-1.5 rounded ${highlight.isCorrect
+                                ? 'text-green-300'
+                                : 'text-red-300 bg-red-900/30 line-through decoration-red-400/50'
+                                }`}
                             >
                               {highlight.word}
                             </span>
@@ -448,9 +455,9 @@ const ListeningModule: React.FC = () => {
                         </div>
                       </div>
 
-                      <div>
-                        <p className="text-sm font-medium text-gray-700 mb-2">정답:</p>
-                        <p className="px-4 py-3 bg-white rounded-lg text-gray-800 font-medium">
+                      <div className="bg-black/20 rounded-lg p-4">
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Correct Answer:</p>
+                        <p className="text-lg text-white font-medium">
                           {result.correctAnswer}
                         </p>
                       </div>
@@ -459,9 +466,9 @@ const ListeningModule: React.FC = () => {
                     {result.isCorrect && (
                       <Button
                         onClick={handleNextContent}
-                        className="mt-4 w-full sm:w-auto"
+                        className="mt-6 w-full bg-green-600 hover:bg-green-500 text-white border-none py-3"
                       >
-                        다음 문장으로
+                        Next Sentence
                       </Button>
                     )}
                   </div>
@@ -469,32 +476,30 @@ const ListeningModule: React.FC = () => {
               </>
             )}
           </div>
-        </Card>
+        </div>
 
         {/* Tips Card */}
-        <Card>
-          <div className="p-6">
-            <h3 className="font-semibold text-gray-900 mb-3">학습 팁</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">&#8226;</span>
-                <span>처음에는 느린 속도(0.75x)로 시작하여 점차 빠르게 연습하세요.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">&#8226;</span>
-                <span>여러 번 듣고 핵심 단어를 먼저 파악해보세요.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">&#8226;</span>
-                <span>틀린 부분은 빨간색으로 표시되니 집중적으로 복습하세요.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-500 mt-0.5">&#8226;</span>
-                <span>힌트를 활용하되, 스스로 맞추려고 노력해보세요.</span>
-              </li>
-            </ul>
-          </div>
-        </Card>
+        <div className="bg-navy-card rounded-2xl p-6 border border-gray-700 shadow-lg">
+          <h3 className="font-serif font-bold text-white mb-4 border-b border-gray-700 pb-2">Learning Tips</h3>
+          <ul className="space-y-3 text-sm text-gray-400">
+            <li className="flex items-start gap-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
+              <span>Start with a slower speed (0.75x) and gradually increase it.</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
+              <span>Listen multiple times to catch key words first.</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
+              <span>Pay attention to red highlighted words to identify specific errors.</span>
+            </li>
+            <li className="flex items-start gap-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
+              <span>Use hints if you're stuck, but try to solve it yourself first!</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );

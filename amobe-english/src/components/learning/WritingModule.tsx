@@ -18,7 +18,7 @@ import {
 import { useApp } from '../../contexts/AppContext';
 import { useGemini } from '../../hooks/useGemini';
 import Button from '../common/Button';
-import Card from '../common/Card';
+
 import LoadingSpinner from '../common/LoadingSpinner';
 import { WritingPrompt, WritingFeedback } from '../../types/learning';
 
@@ -254,10 +254,10 @@ The position.start and position.end should be character indices in the original 
         // Add highlighted text
         const highlightClass =
           highlight.type === 'grammar'
-            ? 'bg-red-100 dark:bg-red-900/30 border-b-2 border-red-500 cursor-pointer'
+            ? 'bg-red-900/40 border-b-2 border-red-500/50 text-red-100 cursor-pointer'
             : highlight.type === 'expression'
-              ? 'bg-green-100 dark:bg-green-900/30 border-b-2 border-green-500 cursor-pointer'
-              : 'bg-yellow-100 dark:bg-yellow-900/30 border-b-2 border-yellow-500 cursor-pointer';
+              ? 'bg-green-900/40 border-b-2 border-green-500/50 text-green-100 cursor-pointer'
+              : 'bg-yellow-900/40 border-b-2 border-yellow-500/50 text-yellow-100 cursor-pointer';
 
         elements.push(
           <span
@@ -295,211 +295,224 @@ The position.start and position.end should be character indices in the original 
 
   if (!selectedType) {
     return (
-      <Card className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <PenTool className="w-16 h-16 mx-auto text-blue-500 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-            영작문 학습
+      <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8 animate-fade-in text-white">
+        <div className="bg-navy-card rounded-2xl border border-gray-700 p-12 text-center shadow-xl mb-8">
+          <div className="w-20 h-20 bg-accent-yellow/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <PenTool className="w-10 h-10 text-accent-yellow" />
+          </div>
+          <h2 className="text-3xl font-serif font-bold text-white mb-4">
+            Writing Practice
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            작문 유형을 선택하고 AI 첨삭을 받아보세요.
+          <p className="text-gray-400 max-w-lg mx-auto text-lg leading-relaxed">
+            Choose a writing type and get AI-powered feedback and corrections.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {writingTypes.map(({ type, icon: Icon, title, description }) => (
             <button
               key={type}
-              className="p-6 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all text-left group"
+              className="p-8 bg-navy-card border border-gray-700 rounded-2xl hover:border-accent-yellow hover:bg-gray-800/50 transition-all text-left group shadow-lg flex flex-col items-start gap-4"
               onClick={() => generateWritingPrompt(type)}
             >
-              <Icon className="w-10 h-10 text-blue-500 mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-                {title}
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+              <div className="p-3 bg-gray-900 rounded-xl group-hover:bg-accent-yellow/20 transition-colors">
+                <Icon className="w-8 h-8 text-accent-yellow group-hover:scale-110 transition-transform" />
+              </div>
+              <div>
+                <h3 className="text-xl font-serif font-bold text-white mb-2 group-hover:text-accent-yellow transition-colors">
+                  {title}
+                </h3>
+                <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
+              </div>
             </button>
           ))}
         </div>
-      </Card>
+      </div>
     );
   }
 
   if (isGeneratingPrompt) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner size="lg" text="작문 주제를 생성하고 있습니다..." />
+      <div className="flex items-center justify-center min-h-[400px] text-white">
+        <LoadingSpinner size="lg" text="Generating writing topic..." />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-6xl mx-auto space-y-6 p-4 animate-fade-in text-white">
       {/* Header */}
-      <Card>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div
-              className={`p-3 rounded-lg ${
-                selectedType === 'diary'
-                  ? 'bg-purple-100 dark:bg-purple-900/30'
-                  : selectedType === 'email'
-                    ? 'bg-blue-100 dark:bg-blue-900/30'
-                    : 'bg-green-100 dark:bg-green-900/30'
-              }`}
-            >
-              {selectedType === 'diary' && <BookOpen className="w-6 h-6 text-purple-600 dark:text-purple-400" />}
-              {selectedType === 'email' && <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />}
-              {selectedType === 'essay' && <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />}
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-white">
-                {selectedType === 'diary' ? '일기' : selectedType === 'email' ? '이메일' : '에세이'} 작성
-              </h2>
-              {prompt && (
-                <p className="text-gray-600 dark:text-gray-400">{prompt.topic}</p>
-              )}
-            </div>
+      <div className="bg-navy-card rounded-2xl border border-gray-700 p-6 flex items-center justify-between shadow-lg">
+        <div className="flex items-center gap-4">
+          <div
+            className={`p-3 rounded-xl bg-gray-800 border border-gray-700`}
+          >
+            {selectedType === 'diary' && <BookOpen className="w-6 h-6 text-accent-yellow" />}
+            {selectedType === 'email' && <Mail className="w-6 h-6 text-accent-yellow" />}
+            {selectedType === 'essay' && <FileText className="w-6 h-6 text-accent-yellow" />}
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => generateWritingPrompt(selectedType)}
-            >
-              <RefreshCw className="w-4 h-4 mr-1" />
-              새 주제
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleReset}>
-              <X className="w-4 h-4 mr-1" />
-              유형 변경
-            </Button>
+          <div>
+            <h2 className="text-xl font-serif font-bold text-white flex items-center gap-2">
+              {selectedType === 'diary' ? 'Diary' : selectedType === 'email' ? 'Email' : 'Essay'} Writing
+            </h2>
+            {prompt && (
+              <p className="text-gray-400 text-sm max-w-2xl truncate">{prompt.topic}</p>
+            )}
           </div>
         </div>
-      </Card>
+        <div className="flex gap-2">
+          <Button
+            className="text-gray-300 border-gray-600 hover:text-white hover:bg-gray-800"
+            variant="outline"
+            size="sm"
+            onClick={() => generateWritingPrompt(selectedType!)}
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            New Topic
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            className="text-gray-300 border-gray-600 hover:text-white hover:bg-gray-800"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Change Type
+          </Button>
+        </div>
+      </div>
 
       {/* Writing Guide */}
       {prompt && (
-        <Card className="bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800">
-          <div className="flex items-start gap-3">
-            <Lightbulb className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
+        <div className="bg-yellow-900/10 border border-yellow-700/30 rounded-2xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-yellow-900/20 rounded-lg">
+              <Lightbulb className="w-6 h-6 text-yellow-500 flex-shrink-0" />
+            </div>
             <div>
-              <h3 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
-                작성 가이드
+              <h3 className="font-bold text-yellow-500 mb-2 font-serif text-lg">
+                Writing Guide
               </h3>
-              <p className="text-yellow-700 dark:text-yellow-300 whitespace-pre-line text-sm">
+              <p className="text-gray-300 whitespace-pre-line text-sm leading-relaxed">
                 {prompt.guide}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Main Content Area */}
       <div className={`grid ${showComparison && feedback ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'} gap-6`}>
         {/* Writing Editor */}
-        <Card>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-gray-800 dark:text-white">
-              {feedback ? '원본' : '작성하기'}
+        <div className="bg-navy-card rounded-2xl border border-gray-700 shadow-xl overflow-hidden flex flex-col">
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-gray-900/30">
+            <h3 className="font-bold text-white flex items-center gap-2">
+              <PenTool className="w-4 h-4 text-accent-yellow" />
+              {feedback ? 'Original Text' : 'Your Writing'}
             </h3>
-            <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-              <span>{wordCount} 단어</span>
-              <span>{charCount} 글자</span>
+            <div className="flex items-center gap-4 text-sm text-gray-400">
+              <span className="font-mono">{wordCount} words</span>
+              <span className="font-mono">{charCount} chars</span>
               {lastSaved && (
-                <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                <span className="flex items-center gap-1 text-accent-green">
                   <Save className="w-3 h-3" />
-                  자동 저장됨
+                  Saved
                 </span>
               )}
             </div>
           </div>
 
-          {feedback ? (
-            <div className="min-h-[300px] p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
-                {renderHighlightedText(text, corrections)}
-              </p>
-            </div>
-          ) : (
-            <textarea
-              className="w-full min-h-[300px] p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-              placeholder="영어로 작성해보세요..."
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-            />
-          )}
+          <div className="flex-1 p-0">
+            {feedback ? (
+              <div className="min-h-[400px] p-6 bg-navy-card">
+                <p className="text-gray-300 whitespace-pre-wrap leading-loose text-lg font-serif">
+                  {renderHighlightedText(text, corrections)}
+                </p>
+              </div>
+            ) : (
+              <textarea
+                className="w-full min-h-[400px] p-6 bg-navy-card text-gray-200 placeholder-gray-600 focus:outline-none focus:ring-0 resize-none text-lg leading-relaxed font-serif"
+                placeholder="Start writing here..."
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                autoFocus
+              />
+            )}
+          </div>
 
-          {/* Legend */}
-          {feedback && corrections.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-1 bg-red-500 rounded"></span>
-                <span className="text-gray-600 dark:text-gray-400">문법 오류</span>
+          <div className="p-4 border-t border-gray-800 bg-gray-900/30">
+            {/* Legend */}
+            {feedback && corrections.length > 0 ? (
+              <div className="flex flex-wrap gap-4 text-xs uppercase tracking-wider font-bold">
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 bg-red-500 rounded-full shadow shadow-red-500/50"></span>
+                  <span className="text-gray-400">Grammar</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 bg-green-500 rounded-full shadow shadow-green-500/50"></span>
+                  <span className="text-gray-400">Expression</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 bg-yellow-500 rounded-full shadow shadow-yellow-500/50"></span>
+                  <span className="text-gray-400">Spelling</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-1 bg-green-500 rounded"></span>
-                <span className="text-gray-600 dark:text-gray-400">표현 개선</span>
+            ) : (
+              <div className="flex justify-end">
+                <Button
+                  onClick={getFeedback}
+                  loading={isGettingFeedback}
+                  disabled={wordCount < 5}
+                  className="bg-accent-yellow hover:bg-yellow-500 text-black font-bold px-8"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Get Corrections
+                </Button>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-4 h-1 bg-yellow-500 rounded"></span>
-                <span className="text-gray-600 dark:text-gray-400">철자 오류</span>
-              </div>
-            </div>
-          )}
-
-          {!feedback && (
-            <div className="mt-4 flex justify-end">
-              <Button
-                onClick={getFeedback}
-                loading={isGettingFeedback}
-                disabled={wordCount < 5}
-              >
-                <Send className="w-4 h-4 mr-2" />
-                첨삭 받기
-              </Button>
-            </div>
-          )}
-        </Card>
+            )}
+          </div>
+        </div>
 
         {/* Corrected Version */}
         {showComparison && feedback && (
-          <Card>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold text-gray-800 dark:text-white">
-                교정본
+          <div className="bg-navy-card rounded-2xl border border-gray-700 shadow-xl overflow-hidden flex flex-col h-full animate-slide-in-right">
+            <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-green-900/10">
+              <h3 className="font-bold text-white flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-accent-green" />
+                Corrected Version
               </h3>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <span
-                  className={`text-lg font-bold ${
-                    feedback.overallScore >= 80
-                      ? 'text-green-600'
-                      : feedback.overallScore >= 60
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
-                  }`}
+                  className={`text-xl font-bold font-mono ${feedback.overallScore >= 80
+                    ? 'text-accent-green'
+                    : feedback.overallScore >= 60
+                      ? 'text-yellow-400'
+                      : 'text-red-400'
+                    }`}
                 >
-                  {feedback.overallScore}점
+                  {feedback.overallScore}
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowComparison(!showComparison)}
+                  className="text-gray-400 hover:text-white"
                 >
                   {showComparison ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
 
-            <div className="min-h-[300px] p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
+            <div className="flex-1 p-6 bg-green-900/5">
+              <p className="text-gray-200 whitespace-pre-wrap leading-loose text-lg font-serif">
                 {feedback.corrected}
               </p>
             </div>
 
-            <div className="mt-4 flex gap-2">
+            <div className="p-4 border-t border-gray-800 bg-gray-900/30 flex gap-3">
               <Button
                 variant="outline"
+                className="flex-1 border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
                 onClick={() => {
                   setText(feedback.corrected);
                   setFeedback(null);
@@ -507,60 +520,55 @@ The position.start and position.end should be character indices in the original 
                   setShowComparison(false);
                 }}
               >
-                교정본으로 수정하기
+                Use Corrected Text
               </Button>
               <Button
                 variant="outline"
+                className="flex-1 border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
                 onClick={() => {
                   setFeedback(null);
                   setCorrections([]);
                   setShowComparison(false);
                 }}
               >
-                다시 작성하기
+                Edit Again
               </Button>
             </div>
-          </Card>
+          </div>
         )}
       </div>
 
       {/* Correction Details */}
       {feedback && corrections.length > 0 && (
-        <Card>
-          <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
-            교정 내용 ({corrections.length}개)
-          </h3>
-          <div className="space-y-4">
+        <div className="bg-navy-card rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+          <div className="p-6 border-b border-gray-800">
+            <h3 className="font-serif font-bold text-white text-xl">
+              Correction Details <span className="text-gray-500 ml-2 text-base font-sans">({corrections.length} items)</span>
+            </h3>
+          </div>
+          <div className="divide-y divide-gray-800">
             {corrections.map((correction, idx) => (
               <div
                 key={idx}
-                className={`p-4 rounded-lg border ${
-                  selectedCorrection === correction
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-200 dark:border-gray-700'
-                } cursor-pointer transition-colors`}
+                className={`p-6 transition-colors ${selectedCorrection === correction
+                  ? 'bg-gray-800/80'
+                  : 'hover:bg-gray-800/30 cursor-pointer'
+                  }`}
                 onClick={() =>
                   setSelectedCorrection(selectedCorrection === correction ? null : correction)
                 }
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span
-                      className={`px-2 py-0.5 rounded text-xs font-medium ${
-                        correction.type === 'grammar'
-                          ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                          : correction.type === 'expression'
-                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                            : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                <div className="flex items-start justify-between mb-3">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${correction.type === 'grammar'
+                      ? 'bg-red-900/30 text-red-400 border border-red-800/50'
+                      : correction.type === 'expression'
+                        ? 'bg-green-900/30 text-green-400 border border-green-800/50'
+                        : 'bg-yellow-900/30 text-yellow-400 border border-yellow-800/50'
                       }`}
-                    >
-                      {correction.type === 'grammar'
-                        ? '문법'
-                        : correction.type === 'expression'
-                          ? '표현'
-                          : '철자'}
-                    </span>
-                  </div>
+                  >
+                    {correction.type}
+                  </span>
                   {correction.type === 'grammar' ? (
                     <AlertCircle className="w-5 h-5 text-red-500" />
                   ) : (
@@ -568,80 +576,88 @@ The position.start and position.end should be character indices in the original 
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-red-600 dark:text-red-400 line-through">
+                <div className="flex flex-col md:flex-row md:items-center gap-3 mb-4 p-4 bg-gray-900/50 rounded-xl">
+                  <span className="text-red-400 line-through decoration-red-500/50 decoration-2">
                     {correction.original}
                   </span>
-                  <ArrowRight className="w-4 h-4 text-gray-400" />
-                  <span className="text-green-600 dark:text-green-400 font-medium">
+                  <ArrowRight className="w-4 h-4 text-gray-500 rotate-90 md:rotate-0" />
+                  <span className="text-green-400 font-bold bg-green-900/20 px-2 py-1 rounded">
                     {correction.suggestion}
                   </span>
                 </div>
 
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-gray-300 text-sm leading-relaxed">
                   {correction.explanation}
                 </p>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Score Summary */}
       {feedback && (
-        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-              작문 평가 결과
-            </h3>
-            <div className="flex justify-center items-center gap-8">
-              <div>
-                <div
-                  className={`text-5xl font-bold ${
-                    feedback.overallScore >= 80
-                      ? 'text-green-600'
-                      : feedback.overallScore >= 60
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
+        <div className="bg-gradient-to-r from-gray-900 to-navy-card border border-gray-700 rounded-2xl p-8 text-center shadow-xl">
+          <h3 className="text-2xl font-serif font-bold text-white mb-8">
+            Analysis Summary
+          </h3>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-12">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-accent-yellow/20 blur-xl rounded-full opacity-50 group-hover:opacity-80 transition-opacity"></div>
+              <div
+                className={`relative text-6xl font-black font-mono tracking-tighter ${feedback.overallScore >= 80
+                  ? 'text-accent-green'
+                  : feedback.overallScore >= 60
+                    ? 'text-accent-yellow'
+                    : 'text-red-400'
                   }`}
-                >
-                  {feedback.overallScore}
-                </div>
-                <div className="text-gray-500 dark:text-gray-400 text-sm mt-1">종합 점수</div>
+              >
+                {feedback.overallScore}
               </div>
-              <div className="h-16 w-px bg-gray-300 dark:bg-gray-600"></div>
-              <div className="text-left">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    문법 오류: {corrections.filter((c) => c.type === 'grammar').length}개
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm mt-1">
-                  <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    표현 개선: {corrections.filter((c) => c.type === 'expression').length}개
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm mt-1">
-                  <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                  <span className="text-gray-600 dark:text-gray-400">
-                    철자 오류: {corrections.filter((c) => c.type === 'spelling').length}개
-                  </span>
-                </div>
-              </div>
+              <div className="text-gray-400 text-sm mt-2 uppercase tracking-widest font-bold">Overall Score</div>
             </div>
-            <div className="mt-6 flex justify-center gap-3">
-              <Button onClick={() => generateWritingPrompt(selectedType)}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                새 주제로 작성하기
-              </Button>
-              <Button variant="outline" onClick={handleReset}>
-                유형 변경
-              </Button>
+
+            <div className="h-px w-full md:w-px md:h-24 bg-gray-700"></div>
+
+            <div className="text-left space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-red-500 shadow-lg shadow-red-500/50"></div>
+                <span className="text-gray-300 text-lg">
+                  Grammar: <span className="font-bold text-white">{corrections.filter((c) => c.type === 'grammar').length}</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-green-500 shadow-lg shadow-green-500/50"></div>
+                <span className="text-gray-300 text-lg">
+                  Expression: <span className="font-bold text-white">{corrections.filter((c) => c.type === 'expression').length}</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-yellow-500 shadow-lg shadow-yellow-500/50"></div>
+                <span className="text-gray-300 text-lg">
+                  Spelling: <span className="font-bold text-white">{corrections.filter((c) => c.type === 'spelling').length}</span>
+                </span>
+              </div>
             </div>
           </div>
-        </Card>
+
+          <div className="mt-10 flex flex-col md:flex-row justify-center gap-4">
+            <Button
+              onClick={() => generateWritingPrompt(selectedType!)}
+              className="bg-accent-yellow hover:bg-yellow-500 text-black font-bold py-3 px-8 text-lg"
+            >
+              <RefreshCw className="w-5 h-5 mr-2" />
+              New Topic
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800 py-3 px-8 text-lg"
+            >
+              Change Type
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

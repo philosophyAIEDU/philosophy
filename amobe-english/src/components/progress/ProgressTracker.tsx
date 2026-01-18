@@ -25,20 +25,19 @@ import {
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import Button from '../common/Button';
-import Card from '../common/Card';
 
 const MODULE_COLORS = {
-  listening: '#3B82F6',
-  reading: '#10B981',
-  writing: '#F59E0B',
-  speaking: '#EF4444',
+  listening: '#60A5FA', // blue-400
+  reading: '#34D399',   // emerald-400
+  writing: '#FBBF24',   // amber-400
+  speaking: '#F87171',  // red-400
 };
 
 const MODULE_LABELS = {
-  listening: '듣기',
-  reading: '읽기',
-  writing: '쓰기',
-  speaking: '말하기',
+  listening: 'Listening',
+  reading: 'Reading',
+  writing: 'Writing',
+  speaking: 'Speaking',
 };
 
 const MODULE_ICONS = {
@@ -49,9 +48,9 @@ const MODULE_ICONS = {
 };
 
 const LEVEL_LABELS = {
-  beginner: '초급',
-  intermediate: '중급',
-  advanced: '고급',
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
 };
 
 const ProgressTracker: React.FC = () => {
@@ -62,9 +61,9 @@ const ProgressTracker: React.FC = () => {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
-      return `${hours}시간 ${mins}분`;
+      return `${hours}h ${mins}m`;
     }
-    return `${mins}분`;
+    return `${mins}m`;
   };
 
   const totalSessions = Object.values(progress.moduleStats).reduce(
@@ -82,22 +81,22 @@ const ProgressTracker: React.FC = () => {
   const weeklyData = progress.weeklyData.length > 0
     ? progress.weeklyData
     : [
-        { day: '월', minutes: 0 },
-        { day: '화', minutes: 0 },
-        { day: '수', minutes: 0 },
-        { day: '목', minutes: 0 },
-        { day: '금', minutes: 0 },
-        { day: '토', minutes: 0 },
-        { day: '일', minutes: 0 },
-      ];
+      { day: '월', minutes: 0 },
+      { day: '화', minutes: 0 },
+      { day: '수', minutes: 0 },
+      { day: '목', minutes: 0 },
+      { day: '금', minutes: 0 },
+      { day: '토', minutes: 0 },
+      { day: '일', minutes: 0 },
+    ];
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <p className="font-medium text-gray-900 dark:text-white">{label}</p>
-          <p className="text-blue-600 dark:text-blue-400">
-            {payload[0].value}분
+        <div className="bg-navy-card p-3 rounded-lg shadow-xl border border-gray-700">
+          <p className="font-medium text-white">{label}</p>
+          <p className="text-accent-blue font-bold">
+            {payload[0].value} min
           </p>
         </div>
       );
@@ -108,12 +107,12 @@ const ProgressTracker: React.FC = () => {
   const PieTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
-          <p className="font-medium text-gray-900 dark:text-white">
+        <div className="bg-navy-card p-3 rounded-lg shadow-xl border border-gray-700">
+          <p className="font-medium text-white mb-1">
             {payload[0].name}
           </p>
-          <p style={{ color: payload[0].payload.color }}>
-            {payload[0].value}분 ({payload[0].payload.count}회)
+          <p style={{ color: payload[0].payload.color }} className="font-bold">
+            {payload[0].value} min ({payload[0].payload.count} sessions)
           </p>
         </div>
       );
@@ -122,148 +121,151 @@ const ProgressTracker: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in p-2">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            학습 현황
+          <h2 className="text-3xl font-serif font-bold text-white mb-1">
+            Learning Progress
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            나의 영어 학습 진행 상황을 확인하세요
+          <p className="text-gray-400">
+            Track your English learning journey
           </p>
         </div>
-        <Button variant="outline" size="sm">
+        <Button
+          className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800"
+          variant="outline"
+          size="sm"
+        >
           <Calendar size={16} className="mr-1" />
-          이번 주
+          This Week
         </Button>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Study Time */}
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-500 rounded-xl">
-              <Clock className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-br from-blue-900/40 to-blue-800/20 border border-blue-700/50 rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-blue-600/20 rounded-xl border border-blue-500/30">
+              <Clock className="w-8 h-8 text-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                총 학습 시간
+              <p className="text-sm text-blue-200 font-medium">
+                Total Time
               </p>
-              <p className="text-xl font-bold text-blue-900 dark:text-blue-100">
+              <p className="text-2xl font-bold text-white mt-1">
                 {formatMinutes(progress.totalMinutes)}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Streak Days */}
-        <Card className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 border-orange-200 dark:border-orange-800">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-orange-500 rounded-xl">
-              <Flame className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-br from-orange-900/40 to-orange-800/20 border border-orange-700/50 rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-orange-600/20 rounded-xl border border-orange-500/30">
+              <Flame className="w-8 h-8 text-orange-400" />
             </div>
             <div>
-              <p className="text-sm text-orange-700 dark:text-orange-300">
-                연속 학습
+              <p className="text-sm text-orange-200 font-medium">
+                Streak
               </p>
-              <p className="text-xl font-bold text-orange-900 dark:text-orange-100">
-                {progress.streakDays}일
+              <p className="text-2xl font-bold text-white mt-1">
+                {progress.streakDays} days
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Completed Sessions */}
-        <Card className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 border-green-200 dark:border-green-800">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-green-500 rounded-xl">
-              <BookOpen className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-br from-green-900/40 to-green-800/20 border border-green-700/50 rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-green-600/20 rounded-xl border border-green-500/30">
+              <BookOpen className="w-8 h-8 text-green-400" />
             </div>
             <div>
-              <p className="text-sm text-green-700 dark:text-green-300">
-                완료 세션
+              <p className="text-sm text-green-200 font-medium">
+                Sessions
               </p>
-              <p className="text-xl font-bold text-green-900 dark:text-green-100">
-                {totalSessions}회
+              <p className="text-2xl font-bold text-white mt-1">
+                {totalSessions}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Vocabulary Count */}
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/30 border-purple-200 dark:border-purple-800">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-500 rounded-xl">
-              <Award className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-br from-purple-900/40 to-purple-800/20 border border-purple-700/50 rounded-2xl p-6 shadow-lg">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-purple-600/20 rounded-xl border border-purple-500/30">
+              <Award className="w-8 h-8 text-purple-400" />
             </div>
             <div>
-              <p className="text-sm text-purple-700 dark:text-purple-300">
-                저장 단어
+              <p className="text-sm text-purple-200 font-medium">
+                Words
               </p>
-              <p className="text-xl font-bold text-purple-900 dark:text-purple-100">
-                {vocabulary.length}개
+              <p className="text-2xl font-bold text-white mt-1">
+                {vocabulary.length}
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Current Level Progress */}
-      <Card>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+      <div className="bg-navy-card border border-gray-700 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-indigo-900/30 rounded-xl border border-indigo-500/30">
+              <TrendingUp className="w-6 h-6 text-indigo-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                현재 레벨
+              <h3 className="text-lg font-bold text-white">
+                Current Level
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                다음 레벨까지의 진행률
+              <p className="text-sm text-gray-400">
+                Progress to next level
               </p>
             </div>
           </div>
           <div className="text-right">
-            <span className="inline-block px-3 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 rounded-full text-sm font-medium">
+            <span className="inline-block px-4 py-1.5 bg-indigo-900/30 text-indigo-300 border border-indigo-500/30 rounded-full text-sm font-bold uppercase tracking-wide">
               {LEVEL_LABELS[progress.currentLevel]}
             </span>
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">진행률</span>
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="text-gray-400 font-medium">Progress</span>
+            <span className="font-bold text-indigo-300">
               {progress.levelProgress}%
             </span>
           </div>
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+          <div className="h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-700">
             <div
-              className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(99,102,241,0.5)]"
               style={{ width: `${progress.levelProgress}%` }}
             />
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-right">
-            {progress.currentLevel === 'beginner'
-              ? '중급'
+          <p className="text-xs text-gray-400 text-right font-medium">
+            {100 - progress.levelProgress}% to {progress.currentLevel === 'beginner'
+              ? 'Intermediate'
               : progress.currentLevel === 'intermediate'
-              ? '고급'
-              : '마스터'}
-            까지 {100 - progress.levelProgress}% 남음
+                ? 'Advanced'
+                : 'Master'}
           </p>
         </div>
-      </Card>
+      </div>
 
       {/* Module Stats */}
-      <Card>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-            <Target className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+      <div className="bg-navy-card border border-gray-700 rounded-2xl p-6">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-3 bg-gray-800 rounded-xl border border-gray-700">
+            <Target className="w-6 h-6 text-gray-400" />
           </div>
-          <h3 className="font-semibold text-gray-900 dark:text-white">
-            모듈별 학습 현황
+          <h3 className="text-xl font-serif font-bold text-white">
+            Module Breakdown
           </h3>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -274,87 +276,91 @@ const ProgressTracker: React.FC = () => {
             return (
               <div
                 key={key}
-                className="p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow"
+                className="p-5 rounded-2xl border border-gray-700 bg-gray-800/30 hover:bg-gray-800/50 hover:border-gray-600 transition-all duration-300"
               >
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-3 mb-4">
                   <div
-                    className="p-2 rounded-lg"
-                    style={{ backgroundColor: `${color}20` }}
+                    className="p-2.5 rounded-xl border border-opacity-20 shadow-inner"
+                    style={{ backgroundColor: `${color}15`, borderColor: color }}
                   >
                     <Icon className="w-5 h-5" style={{ color }} />
                   </div>
-                  <span className="font-medium text-gray-900 dark:text-white">
+                  <span className="font-bold text-gray-200">
                     {label}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <p className="text-2xl font-bold" style={{ color }}>
                     {stat.count}
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-1">
-                      회
+                    <span className="text-sm font-medium text-gray-500 ml-1">
+                      times
                     </span>
                   </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {formatMinutes(stat.minutes)}
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">
+                    {formatMinutes(stat.minutes)} total
                   </p>
                 </div>
               </div>
             );
           })}
         </div>
-      </Card>
+      </div>
 
       {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Weekly Bar Chart */}
-        <Card>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-            주간 학습 시간
+        <div className="bg-navy-card border border-gray-700 rounded-2xl p-6">
+          <h3 className="text-xl font-serif font-bold text-white mb-6">
+            Weekly Activity
           </h3>
-          <div className="h-64">
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyData}>
                 <XAxis
                   dataKey="day"
-                  tick={{ fill: '#6B7280', fontSize: 12 }}
-                  axisLine={{ stroke: '#E5E7EB' }}
+                  tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                  axisLine={{ stroke: '#374151' }}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: '#6B7280', fontSize: 12 }}
-                  axisLine={{ stroke: '#E5E7EB' }}
+                  tick={{ fill: '#9CA3AF', fontSize: 12 }}
+                  axisLine={{ stroke: '#374151' }}
                   tickLine={false}
-                  tickFormatter={(value) => `${value}분`}
+                  tickFormatter={(value) => `${value}m`}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip
+                  content={<CustomTooltip />}
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                />
                 <Bar
                   dataKey="minutes"
-                  fill="#3B82F6"
+                  fill="#60A5FA"
                   radius={[4, 4, 0, 0]}
-                  maxBarSize={40}
+                  barSize={30}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </Card>
+        </div>
 
         {/* Module Distribution Pie Chart */}
-        <Card>
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4">
-            모듈별 분포
+        <div className="bg-navy-card border border-gray-700 rounded-2xl p-6">
+          <h3 className="text-xl font-serif font-bold text-white mb-6">
+            Time Distribution
           </h3>
-          <div className="h-64 flex items-center">
-            <div className="w-1/2 h-full">
+          <div className="h-72 flex flex-col sm:flex-row items-center">
+            <div className="w-full sm:w-1/2 h-48 sm:h-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={moduleData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={50}
+                    innerRadius={60}
                     outerRadius={80}
-                    paddingAngle={2}
+                    paddingAngle={4}
                     dataKey="value"
+                    stroke="none"
                   >
                     {moduleData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -364,80 +370,80 @@ const ProgressTracker: React.FC = () => {
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="w-1/2 space-y-2">
+            <div className="w-full sm:w-1/2 space-y-3 mt-4 sm:mt-0 pl-0 sm:pl-4">
               {moduleData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2">
+                <div key={item.name} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-800/50 transition-colors">
                   <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: item.color }}
+                    className="w-3 h-3 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
+                    style={{ backgroundColor: item.color, boxShadow: `0 0 8px ${item.color}60` }}
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400 flex-1">
+                  <span className="text-sm text-gray-300 flex-1 font-medium">
                     {item.name}
                   </span>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {item.value}분
+                  <span className="text-sm font-bold text-white">
+                    {item.value}m
                   </span>
                 </div>
               ))}
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* Achievements / Goals Section */}
-      <Card className="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
-            <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+      <div className="bg-gradient-to-r from-amber-900/20 to-yellow-900/20 border border-amber-700/30 rounded-2xl p-6">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-3 bg-amber-900/30 rounded-xl border border-amber-500/30">
+            <Award className="w-6 h-6 text-amber-400" />
           </div>
-          <h3 className="font-semibold text-amber-900 dark:text-amber-100">
-            이번 주 목표
+          <h3 className="text-xl font-serif font-bold text-amber-100">
+            Weekly Goals
           </h3>
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
-          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              학습 시간
+          <div className="bg-navy-card/80 border border-gray-700 rounded-xl p-4">
+            <p className="text-sm text-gray-400 mb-2 font-medium">
+              Study Time
             </p>
-            <div className="flex items-end gap-1">
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-white">
                 {Math.round(
                   weeklyData.reduce((sum, d) => sum + d.minutes, 0)
                 )}
               </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                / 150분
+              <span className="text-sm text-gray-500">
+                / 150m
               </span>
             </div>
           </div>
-          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              학습 일수
+          <div className="bg-navy-card/80 border border-gray-700 rounded-xl p-4">
+            <p className="text-sm text-gray-400 mb-2 font-medium">
+              Study Days
             </p>
-            <div className="flex items-end gap-1">
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-white">
                 {weeklyData.filter((d) => d.minutes > 0).length}
               </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                / 5일
+              <span className="text-sm text-gray-500">
+                / 5 days
               </span>
             </div>
           </div>
-          <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-              새 단어
+          <div className="bg-navy-card/80 border border-gray-700 rounded-xl p-4">
+            <p className="text-sm text-gray-400 mb-2 font-medium">
+              New Words
             </p>
-            <div className="flex items-end gap-1">
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-bold text-white">
                 {vocabulary.filter((v) => v.reviewCount === 0).length}
               </span>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                / 20개
+              <span className="text-sm text-gray-500">
+                / 20
               </span>
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

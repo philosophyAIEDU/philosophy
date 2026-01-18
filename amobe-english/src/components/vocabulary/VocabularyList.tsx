@@ -10,13 +10,12 @@ import {
   ChevronDown,
   ChevronUp,
   Volume2,
-  Check,
   Clock,
   Sparkles,
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 import Button from '../common/Button';
-import Card from '../common/Card';
+
 import { VocabularyItem, UserLevel } from '../../types/learning';
 
 type ReviewStatus = 'new' | 'reviewing' | 'completed';
@@ -45,17 +44,17 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
 
   const getStatusBadge = (status: ReviewStatus) => {
     const styles = {
-      new: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-      reviewing: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-      completed: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      new: 'bg-blue-900/30 text-blue-400 border border-blue-800/50',
+      reviewing: 'bg-yellow-900/30 text-yellow-400 border border-yellow-800/50',
+      completed: 'bg-green-900/30 text-green-400 border border-green-800/50',
     };
     const labels = {
-      new: '새로운',
-      reviewing: '복습중',
-      completed: '완료',
+      new: 'New',
+      reviewing: 'Reviewing',
+      completed: 'Mastered',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status]}`}>
+      <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${styles[status]}`}>
         {labels[status]}
       </span>
     );
@@ -63,17 +62,17 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
 
   const getLevelBadge = (level: UserLevel) => {
     const styles = {
-      beginner: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-      intermediate: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-      advanced: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+      beginner: 'bg-emerald-900/30 text-emerald-400 border border-emerald-800/50',
+      intermediate: 'bg-orange-900/30 text-orange-400 border border-orange-800/50',
+      advanced: 'bg-purple-900/30 text-purple-400 border border-purple-800/50',
     };
     const labels = {
-      beginner: '초급',
-      intermediate: '중급',
-      advanced: '고급',
+      beginner: 'Beginner',
+      intermediate: 'Intermediate',
+      advanced: 'Advanced',
     };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[level]}`}>
+      <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${styles[level]}`}>
         {labels[level]}
       </span>
     );
@@ -146,40 +145,43 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
 
   if (vocabulary.length === 0) {
     return (
-      <Card className="text-center py-12">
-        <BookOpen className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-        <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-          저장된 단어가 없습니다
+      <div className="bg-navy-card rounded-2xl border border-gray-700 p-12 text-center shadow-xl">
+        <BookOpen className="w-16 h-16 mx-auto text-gray-600 mb-4" />
+        <h3 className="text-xl font-serif font-bold text-white mb-2">
+          No words saved yet
         </h3>
-        <p className="text-gray-500 dark:text-gray-400">
-          학습 중 새로운 단어를 저장해보세요!
+        <p className="text-gray-400">
+          Start learning and save words to build your vocabulary!
         </p>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in p-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            내 단어장
+          <h2 className="text-3xl font-serif font-bold text-white mb-1">
+            My Vocabulary
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            총 {vocabulary.length}개 단어
+          <p className="text-gray-400 flex items-center gap-2">
+            <BookOpen className="w-4 h-4" />
+            Total {vocabulary.length} words
           </p>
         </div>
         <div className="flex gap-2">
           <Button
+            className={viewMode === 'list' ? 'bg-accent-blue text-white' : 'border-gray-600 text-gray-300 hover:text-white'}
             variant={viewMode === 'list' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => setViewMode('list')}
           >
             <BookOpen size={16} className="mr-1" />
-            목록
+            List
           </Button>
           <Button
+            className={viewMode === 'flashcard' ? 'bg-accent-blue text-white' : 'border-gray-600 text-gray-300 hover:text-white'}
             variant={viewMode === 'flashcard' ? 'primary' : 'outline'}
             size="sm"
             onClick={() => {
@@ -189,17 +191,17 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             }}
           >
             <RotateCcw size={16} className="mr-1" />
-            플래시카드
+            Flashcards
           </Button>
           {onStartQuiz && (
             <Button
-              variant="secondary"
+              className="bg-accent-yellow hover:bg-yellow-500 text-black border-none"
               size="sm"
               onClick={() => onStartQuiz(filteredVocabulary)}
               disabled={filteredVocabulary.length === 0}
             >
               <Brain size={16} className="mr-1" />
-              퀴즈 모드
+              Start Quiz
             </Button>
           )}
         </div>
@@ -207,48 +209,47 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
 
       {/* Today's Review Section */}
       {todayReviewWords.length > 0 && viewMode === 'list' && (
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
-              <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <div className="bg-gradient-to-r from-blue-900/20 to-indigo-900/20 rounded-2xl border border-blue-500/30 p-6">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
+              <Clock className="w-6 h-6 text-blue-400" />
             </div>
             <div>
-              <h3 className="font-semibold text-blue-900 dark:text-blue-100">
-                오늘 복습할 단어
+              <h3 className="font-bold text-blue-100 text-lg">
+                Review for Today
               </h3>
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                {todayReviewWords.length}개의 단어가 복습을 기다리고 있어요
+              <p className="text-blue-300/80">
+                {todayReviewWords.length} words are ready for review
               </p>
             </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mb-4">
             {todayReviewWords.slice(0, 5).map((item) => (
               <span
                 key={item.id}
-                className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-lg text-sm font-medium text-gray-800 dark:text-gray-200 shadow-sm"
+                className="px-3 py-1.5 bg-navy-card border border-blue-500/30 rounded-lg text-sm font-medium text-blue-100"
               >
                 {item.word}
               </span>
             ))}
             {todayReviewWords.length > 5 && (
-              <span className="px-3 py-1.5 text-sm text-blue-600 dark:text-blue-400">
-                +{todayReviewWords.length - 5}개 더
+              <span className="px-3 py-1.5 text-sm text-blue-400 flex items-center">
+                +{todayReviewWords.length - 5} more
               </span>
             )}
           </div>
           <Button
-            variant="primary"
+            className="bg-blue-600 hover:bg-blue-500 text-white border-none"
             size="sm"
-            className="mt-4"
             onClick={() => {
               setViewMode('flashcard');
               setCurrentFlashcardIndex(0);
             }}
           >
             <Sparkles size={16} className="mr-1" />
-            복습 시작하기
+            Start Review Session
           </Button>
-        </Card>
+        </div>
       )}
 
       {/* Search and Filters */}
@@ -256,51 +257,46 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
               size={20}
             />
             <input
               type="text"
-              placeholder="단어 또는 의미로 검색..."
+              placeholder="Search words..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border border-gray-700 rounded-xl bg-navy-card text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent"
             />
           </div>
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="flex-shrink-0"
+            className="flex-shrink-0 border-gray-700 text-gray-300 hover:bg-gray-800"
           >
             <Filter size={18} className="mr-1" />
-            필터
+            Filters
             {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </Button>
         </div>
 
         {showFilters && (
-          <div className="flex gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <span className="text-sm text-gray-600 dark:text-gray-400 self-center">
-              레벨:
+          <div className="flex gap-2 p-4 bg-gray-900/50 border border-gray-800 rounded-xl animate-fade-in">
+            <span className="text-sm text-gray-400 self-center font-medium mr-2">
+              Level:
             </span>
             {(['all', 'beginner', 'intermediate', 'advanced'] as const).map(
               (level) => (
                 <button
                   key={level}
                   onClick={() => setLevelFilter(level)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    levelFilter === level
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${levelFilter === level
+                    ? 'bg-accent-blue text-white shadow-lg shadow-blue-500/20'
+                    : 'bg-navy-card text-gray-400 hover:bg-gray-800 hover:text-white border border-gray-700'
+                    }`}
                 >
                   {level === 'all'
-                    ? '전체'
-                    : level === 'beginner'
-                    ? '초급'
-                    : level === 'intermediate'
-                    ? '중급'
-                    : '고급'}
+                    ? 'All'
+                    : level.charAt(0).toUpperCase() + level.slice(1)}
                 </button>
               )
             )}
@@ -310,84 +306,89 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
 
       {/* Flashcard View */}
       {viewMode === 'flashcard' && filteredVocabulary.length > 0 && (
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center py-8">
           <div
-            className="w-full max-w-md h-64 perspective-1000 cursor-pointer"
+            className="w-full max-w-md h-80 perspective-1000 cursor-pointer group"
             onClick={() => setIsFlashcardFlipped(!isFlashcardFlipped)}
           >
             <div
-              className={`relative w-full h-full transition-transform duration-500 transform-style-3d ${
-                isFlashcardFlipped ? 'rotate-y-180' : ''
-              }`}
+              className={`relative w-full h-full transition-all duration-700 transform-style-3d ${isFlashcardFlipped ? 'rotate-y-180' : ''
+                }`}
               style={{
                 transformStyle: 'preserve-3d',
                 transform: isFlashcardFlipped ? 'rotateY(180deg)' : 'rotateY(0)',
               }}
             >
               {/* Front */}
-              <Card
-                className="absolute w-full h-full flex flex-col items-center justify-center backface-hidden"
+              <div
+                className="absolute w-full h-full flex flex-col items-center justify-center backface-hidden bg-navy-card border border-gray-700 rounded-2xl shadow-2xl p-8"
                 style={{ backfaceVisibility: 'hidden' }}
               >
+                <div className="absolute top-4 left-4">
+                  <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">Front</span>
+                </div>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     speakWord(filteredVocabulary[currentFlashcardIndex].word);
                   }}
-                  className="absolute top-4 right-4 p-2 text-gray-400 hover:text-blue-500 transition-colors"
+                  className="absolute top-4 right-4 p-2 text-gray-400 hover:text-accent-blue transition-colors rounded-full hover:bg-gray-800"
                 >
-                  <Volume2 size={20} />
+                  <Volume2 size={24} />
                 </button>
-                <p className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+
+                <h3 className="text-4xl font-serif font-bold text-white mb-4 text-center">
                   {filteredVocabulary[currentFlashcardIndex].word}
-                </p>
+                </h3>
+
                 {filteredVocabulary[currentFlashcardIndex].pronunciation && (
-                  <p className="text-gray-500 dark:text-gray-400">
-                    [{filteredVocabulary[currentFlashcardIndex].pronunciation}]
+                  <p className="text-gray-400 font-mono text-lg bg-gray-900 px-3 py-1 rounded-lg">
+                    /{filteredVocabulary[currentFlashcardIndex].pronunciation}/
                   </p>
                 )}
-                <p className="text-sm text-gray-400 mt-4">클릭하여 뒤집기</p>
-              </Card>
+
+                <p className="text-sm text-gray-600 mt-8 animate-pulse">Click to flip</p>
+              </div>
 
               {/* Back */}
-              <Card
-                className="absolute w-full h-full flex flex-col items-center justify-center"
+              <div
+                className="absolute w-full h-full flex flex-col items-center justify-center bg-gray-800 border border-gray-600 rounded-2xl shadow-2xl p-8"
                 style={{
                   backfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',
                 }}
               >
-                <p className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+                <div className="absolute top-4 left-4">
+                  <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">Back</span>
+                </div>
+                <p className="text-3xl font-medium text-white mb-6 text-center">
                   {filteredVocabulary[currentFlashcardIndex].meaning}
                 </p>
-                <p className="text-gray-600 dark:text-gray-400 text-center px-4 italic">
+                <div className="w-12 h-1 bg-accent-blue rounded-full mb-6"></div>
+                <p className="text-gray-300 text-center text-lg italic leading-relaxed">
                   "{filteredVocabulary[currentFlashcardIndex].example}"
                 </p>
-              </Card>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 mt-6">
-            <Button variant="outline" onClick={handleFlashcardPrev}>
-              이전
+          <div className="flex items-center gap-6 mt-8">
+            <Button
+              variant="outline"
+              onClick={handleFlashcardPrev}
+              className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800 rounded-full w-12 h-12 p-0 flex items-center justify-center"
+            >
+              <ChevronDown className="rotate-90" size={24} />
             </Button>
-            <span className="text-gray-600 dark:text-gray-400">
-              {currentFlashcardIndex + 1} / {filteredVocabulary.length}
+            <span className="text-gray-400 font-mono text-lg">
+              {currentFlashcardIndex + 1} <span className="text-gray-600">/</span> {filteredVocabulary.length}
             </span>
-            <Button variant="outline" onClick={handleFlashcardNext}>
-              다음
-            </Button>
-          </div>
-
-          <div className="flex gap-2 mt-4">
-            <Button variant="danger" size="sm">
-              <span className="mr-1">X</span> 모르겠어요
-            </Button>
-            <Button variant="secondary" size="sm">
-              <span className="mr-1">~</span> 애매해요
-            </Button>
-            <Button variant="primary" size="sm">
-              <Check size={16} className="mr-1" /> 알아요!
+            <Button
+              variant="outline"
+              onClick={handleFlashcardNext}
+              className="border-gray-600 text-gray-300 hover:text-white hover:bg-gray-800 rounded-full w-12 h-12 p-0 flex items-center justify-center"
+            >
+              <ChevronDown className="-rotate-90" size={24} />
             </Button>
           </div>
         </div>
@@ -395,94 +396,101 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
 
       {/* List View */}
       {viewMode === 'list' && (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4">
           {filteredVocabulary.length === 0 ? (
-            <Card className="text-center py-8">
-              <p className="text-gray-500 dark:text-gray-400">
-                검색 결과가 없습니다
+            <div className="bg-navy-card rounded-2xl border border-gray-700 p-8 text-center">
+              <p className="text-gray-400">
+                No results found for your search.
               </p>
-            </Card>
+            </div>
           ) : (
             filteredVocabulary.map((item) => (
-              <Card
+              <div
                 key={item.id}
-                className="hover:shadow-lg transition-shadow"
+                className="group bg-navy-card rounded-xl border border-gray-700 p-6 hover:border-gray-500 transition-all hover:shadow-lg"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-xl font-serif font-bold text-white">
                         {item.word}
                       </h3>
                       <button
                         onClick={() => speakWord(item.word)}
-                        className="p-1 text-gray-400 hover:text-blue-500 transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-accent-blue hover:bg-gray-800 rounded-full transition-colors"
                       >
-                        <Volume2 size={18} />
+                        <Volume2 size={16} />
                       </button>
                       {getStatusBadge(getReviewStatus(item))}
                       {getLevelBadge(item.level)}
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 mb-2">
+
+                    <p className="text-gray-200 text-lg font-medium">
                       {item.meaning}
                     </p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm italic">
-                      "{item.example}"
-                    </p>
-                    <div className="flex items-center gap-4 mt-3">
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
-                          숙달도:
+
+                    <div className="pl-4 border-l-2 border-gray-700">
+                      <p className="text-gray-400 text-sm italic leading-relaxed">
+                        "{item.example}"
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-6 pt-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                          Mastery
                         </span>
                         {renderMasteryStars(item.masteryLevel)}
                       </div>
-                      <span className="text-xs text-gray-400">
-                        복습 {item.reviewCount}회
+                      <span className="text-xs text-gray-500">
+                        Reviewed {item.reviewCount} times
                       </span>
                     </div>
                   </div>
+
                   <button
                     onClick={() => handleDelete(item.id)}
-                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                    className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-900/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                    title="Delete word"
                   >
                     <Trash2 size={18} />
                   </button>
                 </div>
-              </Card>
+              </div>
             ))
           )}
         </div>
       )}
 
       {/* Stats Summary */}
-      <Card className="bg-gray-50 dark:bg-gray-800/50">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+      <div className="bg-gray-900/50 border border-gray-800 rounded-2xl p-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center divide-x divide-gray-800">
           <div>
-            <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <p className="text-3xl font-bold text-blue-400 mb-1">
               {vocabulary.filter((v) => getReviewStatus(v) === 'new').length}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">새로운</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">New</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+            <p className="text-3xl font-bold text-yellow-400 mb-1">
               {vocabulary.filter((v) => getReviewStatus(v) === 'reviewing').length}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">복습중</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Reviewing</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+            <p className="text-3xl font-bold text-green-400 mb-1">
               {vocabulary.filter((v) => getReviewStatus(v) === 'completed').length}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">완료</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Mastered</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+            <p className="text-3xl font-bold text-purple-400 mb-1">
               {todayReviewWords.length}
             </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400">오늘 복습</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">To Review</p>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

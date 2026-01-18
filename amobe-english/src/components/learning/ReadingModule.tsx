@@ -6,8 +6,8 @@ import {
   BookmarkCheck,
   CheckCircle,
   XCircle,
+  ChevronLeft,
   ChevronRight,
-  RefreshCw,
   BarChart3,
   X,
   Send,
@@ -15,7 +15,7 @@ import {
 import { useApp } from '../../contexts/AppContext';
 import { useGemini } from '../../hooks/useGemini';
 import Button from '../common/Button';
-import Card from '../common/Card';
+
 import LoadingSpinner from '../common/LoadingSpinner';
 import { ReadingContent, VocabularyItem, UserLevel } from '../../types/learning';
 
@@ -167,10 +167,10 @@ Include 2 multiple choice and 1 open-ended question.`;
         setWordPopup((prev) =>
           prev
             ? {
-                ...prev,
-                meaning: vocabItem.meaning,
-                example: vocabItem.example,
-              }
+              ...prev,
+              meaning: vocabItem.meaning,
+              example: vocabItem.example,
+            }
             : null
         );
         setIsLookingUpWord(false);
@@ -190,10 +190,10 @@ Return JSON: {"meaning": "Korean meaning", "example": "Example sentence in Engli
           setWordPopup((prev) =>
             prev
               ? {
-                  ...prev,
-                  meaning: result.meaning,
-                  example: result.example,
-                }
+                ...prev,
+                meaning: result.meaning,
+                example: result.example,
+              }
               : null
           );
         }
@@ -201,10 +201,10 @@ Return JSON: {"meaning": "Korean meaning", "example": "Example sentence in Engli
         setWordPopup((prev) =>
           prev
             ? {
-                ...prev,
-                meaning: '의미를 찾을 수 없습니다',
-                example: '',
-              }
+              ...prev,
+              meaning: '의미를 찾을 수 없습니다',
+              example: '',
+            }
             : null
         );
       } finally {
@@ -354,9 +354,8 @@ Consider: vocabulary complexity, sentence structure, topic familiarity, grammar 
       return (
         <span
           key={index}
-          className={`cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800 rounded px-0.5 transition-colors ${
-            isSaved ? 'bg-green-100 dark:bg-green-900/30' : ''
-          }`}
+          className={`cursor-pointer hover:bg-yellow-200 dark:hover:bg-yellow-800 rounded px-0.5 transition-colors ${isSaved ? 'bg-green-100 dark:bg-green-900/30' : ''
+            }`}
           onClick={(e) => handleWordClick(e, word)}
         >
           {word}
@@ -373,379 +372,428 @@ Consider: vocabulary complexity, sentence structure, topic familiarity, grammar 
 
   if (isGeneratingContent) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner size="lg" text="읽기 자료를 생성하고 있습니다..." />
+      <div className="flex items-center justify-center min-h-[400px] text-white">
+        <LoadingSpinner size="lg" text="Generating reading material..." />
       </div>
     );
   }
 
   if (!content) {
     return (
-      <Card className="max-w-4xl mx-auto">
-        <div className="text-center py-12">
-          <BookOpen className="w-16 h-16 mx-auto text-blue-500 mb-4" />
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
-            읽기 학습
+      <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8 animate-fade-in text-white">
+        <div className="bg-navy-card rounded-2xl border border-gray-700 p-12 text-center shadow-xl">
+          <div className="w-20 h-20 bg-accent-green/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BookOpen className="w-10 h-10 text-accent-green" />
+          </div>
+          <h2 className="text-3xl font-serif font-bold text-white mb-4">
+            Reading Practice
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            AI가 생성한 영어 지문을 읽고 이해력을 테스트해보세요.
+          <p className="text-gray-400 mb-8 max-w-lg mx-auto text-lg leading-relaxed">
+            Read AI-generated English articles tailored to your level.
             <br />
-            단어를 클릭하면 뜻을 확인하고 단어장에 저장할 수 있습니다.
+            Click on any word to translate and save it to your vocabulary.
           </p>
-          <Button onClick={generateReadingContent} size="lg">
-            <BookOpen className="w-5 h-5 mr-2" />
-            읽기 자료 생성하기
+          <Button
+            onClick={generateReadingContent}
+            size="lg"
+            className="bg-accent-green hover:bg-green-600 text-white border-none py-6 px-8 text-lg rounded-xl shadow-lg shadow-accent-green/20"
+          >
+            <BookOpen className="w-6 h-6 mr-3" />
+            Generate New Article
           </Button>
         </div>
-      </Card>
+      </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Title and Controls */}
-      <Card>
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-              {content.title}
-            </h1>
-            <div className="flex items-center gap-2 mt-2">
-              <span
-                className={`px-2 py-1 rounded text-xs font-medium ${
-                  content.level === 'beginner'
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : content.level === 'intermediate'
-                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                }`}
-              >
-                {content.level === 'beginner'
-                  ? '초급'
-                  : content.level === 'intermediate'
-                    ? '중급'
-                    : '고급'}
-              </span>
-            </div>
+    <div className="min-h-screen p-4 md:p-6 lg:p-8 animate-fade-in text-white">
+      <div className="max-w-4xl mx-auto space-y-8">
+        {/* Header with Back Button */}
+        <button
+          onClick={() => { setContent(null); }}
+          className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+        >
+          <div className="p-1 rounded-full group-hover:bg-gray-800 transition-colors">
+            <ChevronLeft className="w-5 h-5" />
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePronounce(content.content)}
-            >
-              <Volume2 className="w-4 h-4 mr-1" />
-              듣기
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={analyzeDifficulty}
-              loading={isAnalyzing}
-            >
-              <BarChart3 className="w-4 h-4 mr-1" />
-              난이도 분석
-            </Button>
-            <Button variant="outline" size="sm" onClick={generateReadingContent}>
-              <RefreshCw className="w-4 h-4 mr-1" />
-              새 지문
-            </Button>
-          </div>
-        </div>
+          <span>Back to Selection</span>
+        </button>
 
-        {/* Difficulty Analysis */}
-        {difficultyAnalysis && (
-          <div className="mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-3">
-              난이도 분석 결과
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">난이도 점수</p>
-                <p className="text-xl font-bold text-blue-600">{difficultyAnalysis.score}/100</p>
+        {/* content Card */}
+        <div className="bg-navy-card rounded-2xl border border-gray-700 shadow-xl overflow-hidden">
+          {/* Article Header */}
+          <div className="border-b border-gray-700 bg-gray-900/40 p-6 md:p-8">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <span
+                    className={`
+                            px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase
+                            ${content.level === 'beginner'
+                        ? 'bg-green-900/30 text-green-400 border border-green-800/50'
+                        : content.level === 'intermediate'
+                          ? 'bg-yellow-900/30 text-yellow-400 border border-yellow-800/50'
+                          : 'bg-red-900/30 text-red-400 border border-red-800/50'
+                      }
+                        `}
+                  >
+                    {content.level.charAt(0).toUpperCase() + content.level.slice(1)}
+                  </span>
+                  <span className="text-gray-500 text-sm flex items-center gap-1">
+                    <BookOpen className="w-3 h-3" /> Article
+                  </span>
+                </div>
+                <h1 className="text-3xl md:text-4xl font-serif font-bold text-white leading-tight">
+                  {content.title}
+                </h1>
               </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">평균 단어 길이</p>
-                <p className="text-xl font-bold text-blue-600">
-                  {difficultyAnalysis.averageWordLength.toFixed(1)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">문장 수</p>
-                <p className="text-xl font-bold text-blue-600">{difficultyAnalysis.sentenceCount}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">복잡한 단어</p>
-                <p className="text-xl font-bold text-blue-600">{difficultyAnalysis.complexWordsCount}개</p>
+
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => handlePronounce(content.content)}
+                  className="p-2.5 rounded-lg bg-gray-800 text-gray-300 hover:text-white hover:bg-gray-700 border border-gray-600 transition-all active:scale-95"
+                  title="Listen to article"
+                >
+                  <Volume2 className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={analyzeDifficulty}
+                  className={`p-2.5 rounded-lg bg-gray-800 text-gray-300 hover:text-white hover:bg-gray-700 border border-gray-600 transition-all active:scale-95 ${isAnalyzing ? 'animate-pulse' : ''}`}
+                  title="Analyze Difficulty"
+                >
+                  <BarChart3 className="w-5 h-5" />
+                </button>
               </div>
             </div>
-            {difficultyAnalysis.suggestions.length > 0 && (
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">학습 제안</p>
-                <ul className="text-sm text-gray-700 dark:text-gray-300 list-disc list-inside">
-                  {difficultyAnalysis.suggestions.map((suggestion, idx) => (
-                    <li key={idx}>{suggestion}</li>
-                  ))}
-                </ul>
+
+            {/* Difficulty Analysis Result */}
+            {difficultyAnalysis && (
+              <div className="mt-6 p-5 bg-gray-800/60 rounded-xl border border-gray-700 backdrop-blur-sm animate-fade-in">
+                <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
+                  <h3 className="font-bold text-gray-200 flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-accent-green" />
+                    Analysis Result
+                  </h3>
+                  <span className="text-2xl font-bold text-accent-green">{difficultyAnalysis.score}<span className="text-sm text-gray-500 font-normal">/100</span></span>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                  <div className="bg-gray-900/50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Avg Word Length</p>
+                    <p className="text-lg font-mono text-white">{difficultyAnalysis.averageWordLength.toFixed(1)}</p>
+                  </div>
+                  <div className="bg-gray-900/50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Sentences</p>
+                    <p className="text-lg font-mono text-white">{difficultyAnalysis.sentenceCount}</p>
+                  </div>
+                  <div className="bg-gray-900/50 p-3 rounded-lg">
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Complex Words</p>
+                    <p className="text-lg font-mono text-white">{difficultyAnalysis.complexWordsCount}</p>
+                  </div>
+                </div>
+
+                {difficultyAnalysis.suggestions.length > 0 && (
+                  <div className="space-y-1">
+                    {difficultyAnalysis.suggestions.map((suggestion, idx) => (
+                      <p key={idx} className="text-sm text-gray-400 flex items-start gap-2">
+                        <span className="text-accent-green mt-1">•</span>
+                        {suggestion}
+                      </p>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
 
-        {/* Reading Content */}
-        <div className="prose prose-lg dark:prose-invert max-w-none">
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-lg">
-            {renderContent}
-          </p>
+          {/* Article Content */}
+          <div className="p-6 md:p-8 bg-navy-card">
+            <div className="prose prose-lg prose-invert max-w-none prose-p:leading-8 prose-p:text-gray-300">
+              <p className="text-lg md:text-xl font-light font-sans text-gray-200">
+                {renderContent}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Word Popup */}
         {wordPopup && (
           <div
-            className="fixed z-50 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl p-4 max-w-xs"
+            className="fixed z-50 bg-gray-800 border border-gray-600 rounded-xl shadow-2xl p-4 max-w-xs animate-fade-in"
             style={{
               left: Math.min(wordPopup.position.x, window.innerWidth - 320),
               top: wordPopup.position.y,
             }}
           >
             <button
-              className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute top-2 right-2 text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition-colors"
               onClick={() => setWordPopup(null)}
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="flex items-center gap-2 mb-2">
-              <h4 className="font-bold text-lg text-gray-800 dark:text-white">
+
+            <div className="flex items-center gap-2 mb-3 pr-6">
+              <h4 className="font-serif font-bold text-xl text-white">
                 {wordPopup.word}
               </h4>
               <button
-                className="text-blue-500 hover:text-blue-700"
+                className="text-accent-green hover:text-green-300 p-1 rounded-full hover:bg-green-900/30 transition-colors"
                 onClick={() => handlePronounce(wordPopup.word)}
               >
                 <Volume2 className="w-4 h-4" />
               </button>
             </div>
+
             {isLookingUpWord ? (
-              <LoadingSpinner size="sm" />
+              <div className="flex justify-center py-4">
+                <LoadingSpinner size="sm" />
+              </div>
             ) : (
-              <>
-                <p className="text-gray-600 dark:text-gray-300 mb-2">
-                  {wordPopup.meaning}
-                </p>
-                {wordPopup.example && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 italic mb-3">
-                    "{wordPopup.example}"
+              <div className="space-y-3">
+                <div>
+                  <span className="text-xs font-bold text-gray-500 uppercase block mb-1">Meaning</span>
+                  <p className="text-gray-200 font-medium">
+                    {wordPopup.meaning}
                   </p>
+                </div>
+
+                {wordPopup.example && (
+                  <div>
+                    <span className="text-xs font-bold text-gray-500 uppercase block mb-1">Example</span>
+                    <p className="text-sm text-gray-400 italic leading-snug">
+                      "{wordPopup.example}"
+                    </p>
+                  </div>
                 )}
+
                 <Button
                   size="sm"
                   variant={savedWords.has(wordPopup.word.toLowerCase()) ? 'secondary' : 'primary'}
                   onClick={handleSaveWord}
                   disabled={savedWords.has(wordPopup.word.toLowerCase())}
-                  className="w-full"
+                  className={`w-full mt-2 ${savedWords.has(wordPopup.word.toLowerCase())
+                    ? 'bg-gray-700 text-gray-300 border-none'
+                    : 'bg-accent-green hover:bg-green-600 text-white border-none'
+                    }`}
                 >
                   {savedWords.has(wordPopup.word.toLowerCase()) ? (
                     <>
                       <BookmarkCheck className="w-4 h-4 mr-1" />
-                      저장됨
+                      Saved to Vocabulary
                     </>
                   ) : (
                     <>
                       <Bookmark className="w-4 h-4 mr-1" />
-                      단어장에 저장
+                      Save Word
                     </>
                   )}
                 </Button>
-              </>
+              </div>
             )}
           </div>
         )}
-      </Card>
 
-      {/* Vocabulary List */}
-      {content.vocabulary.length > 0 && (
-        <Card>
-          <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
-            주요 단어 ({content.vocabulary.length}개)
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {content.vocabulary.map((vocab) => (
-              <div
-                key={vocab.id}
-                className={`p-3 rounded-lg border ${
-                  savedWords.has(vocab.word.toLowerCase())
-                    ? 'border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20'
-                    : 'border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-800 dark:text-white">
-                      {vocab.word}
-                    </span>
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handlePronounce(vocab.word)}
-                    >
-                      <Volume2 className="w-3 h-3" />
-                    </button>
-                  </div>
-                  {!savedWords.has(vocab.word.toLowerCase()) && (
-                    <button
-                      className="text-gray-400 hover:text-blue-500"
-                      onClick={() => {
-                        addToVocabulary(vocab);
-                        setSavedWords((prev) => new Set([...prev, vocab.word.toLowerCase()]));
-                      }}
-                    >
-                      <Bookmark className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{vocab.meaning}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+        {/* Two Column Layout for Vocab and Questions */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-      {/* Comprehension Questions */}
-      <Card>
-        <h3 className="font-semibold text-gray-800 dark:text-white mb-4">
-          이해력 테스트
-        </h3>
-        <div className="space-y-6">
-          {content.questions.map((question, qIndex) => (
-            <div key={question.id} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0">
-              <p className="font-medium text-gray-800 dark:text-white mb-3">
-                {qIndex + 1}. {question.question}
-              </p>
-
-              {question.type === 'multiple' && question.options ? (
-                <div className="space-y-2">
-                  {question.options.map((option, oIndex) => (
-                    <label
-                      key={oIndex}
-                      className={`flex items-center p-3 rounded-lg border cursor-pointer transition-colors ${
-                        answers[question.id] === option
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                          : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
-                      } ${
-                        showResults && results[question.id]
-                          ? option === question.answer
-                            ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                            : answers[question.id] === option
-                              ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                              : ''
-                          : ''
+          {/* Vocabulary List */}
+          {content.vocabulary.length > 0 && (
+            <div className="lg:col-span-1 space-y-4">
+              <h3 className="font-serif font-bold text-xl text-white flex items-center gap-2">
+                <Bookmark className="w-5 h-5 text-accent-green" />
+                Key Vocabulary
+              </h3>
+              <div className="grid grid-cols-1 gap-3">
+                {content.vocabulary.map((vocab) => (
+                  <div
+                    key={vocab.id}
+                    className={`p-4 rounded-xl border transition-all ${savedWords.has(vocab.word.toLowerCase())
+                      ? 'border-green-500/30 bg-green-900/10'
+                      : 'border-gray-700 bg-navy-card hover:border-gray-600'
                       }`}
-                    >
-                      <input
-                        type="radio"
-                        name={question.id}
-                        value={option}
-                        checked={answers[question.id] === option}
-                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                        disabled={showResults}
-                        className="mr-3"
-                      />
-                      <span className="text-gray-700 dark:text-gray-300">{option}</span>
-                      {showResults && option === question.answer && (
-                        <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
-                      )}
-                      {showResults &&
-                        answers[question.id] === option &&
-                        option !== question.answer && (
-                          <XCircle className="w-5 h-5 text-red-500 ml-auto" />
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-lg text-white font-serif">
+                        {vocab.word}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          className="p-1.5 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full transition-colors"
+                          onClick={() => handlePronounce(vocab.word)}
+                        >
+                          <Volume2 className="w-3.5 h-3.5" />
+                        </button>
+                        {!savedWords.has(vocab.word.toLowerCase()) && (
+                          <button
+                            className="p-1.5 text-gray-400 hover:text-accent-green hover:bg-gray-700 rounded-full transition-colors"
+                            onClick={() => {
+                              addToVocabulary(vocab);
+                              setSavedWords((prev) => new Set([...prev, vocab.word.toLowerCase()]));
+                            }}
+                          >
+                            <Bookmark className="w-3.5 h-3.5" />
+                          </button>
                         )}
-                    </label>
-                  ))}
-                </div>
-              ) : (
-                <textarea
-                  className="w-full p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                  rows={3}
-                  placeholder="답변을 영어로 작성해주세요..."
-                  value={answers[question.id] || ''}
-                  onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                  disabled={showResults}
-                />
-              )}
-
-              {showResults && results[question.id] && (
-                <div
-                  className={`mt-3 p-3 rounded-lg ${
-                    results[question.id].isCorrect
-                      ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                      : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {results[question.id].isCorrect ? (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <XCircle className="w-5 h-5 text-red-500" />
-                    )}
-                    <span
-                      className={
-                        results[question.id].isCorrect
-                          ? 'text-green-700 dark:text-green-400'
-                          : 'text-red-700 dark:text-red-400'
-                      }
-                    >
-                      {results[question.id].feedback}
-                    </span>
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-sm">{vocab.meaning}</p>
                   </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 flex items-center justify-between">
-          {!showResults ? (
-            <Button
-              onClick={handleSubmitAnswers}
-              loading={isCheckingAnswers}
-              disabled={Object.keys(answers).length === 0}
-            >
-              <Send className="w-4 h-4 mr-2" />
-              답안 제출
-            </Button>
-          ) : (
-            <div className="flex items-center gap-4">
-              <div className="text-lg font-semibold">
-                점수:{' '}
-                <span
-                  className={
-                    calculateScore >= 70
-                      ? 'text-green-600'
-                      : calculateScore >= 40
-                        ? 'text-yellow-600'
-                        : 'text-red-600'
-                  }
-                >
-                  {calculateScore}점
-                </span>
+                ))}
               </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setAnswers({});
-                  setResults({});
-                  setShowResults(false);
-                }}
-              >
-                다시 풀기
-              </Button>
-              <Button onClick={generateReadingContent}>
-                <ChevronRight className="w-4 h-4 mr-1" />
-                다음 지문
-              </Button>
             </div>
           )}
+
+          {/* Comprehension Questions */}
+          <div className="lg:col-span-2 space-y-4">
+            <h3 className="font-serif font-bold text-xl text-white flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-accent-green" />
+              Comprehension Check
+            </h3>
+
+            <div className="bg-navy-card rounded-2xl border border-gray-700 p-6 space-y-8">
+              {content.questions.map((question, qIndex) => (
+                <div key={question.id} className="border-b border-gray-800 pb-8 last:border-0 last:pb-0">
+                  <p className="font-medium text-lg text-gray-200 mb-4 flex gap-3">
+                    <span className="text-accent-green font-bold">{qIndex + 1}.</span>
+                    {question.question}
+                  </p>
+
+                  {question.type === 'multiple' && question.options ? (
+                    <div className="grid grid-cols-1 gap-2">
+                      {question.options.map((option, oIndex) => (
+                        <label
+                          key={oIndex}
+                          className={`flex items-center p-4 rounded-xl border cursor-pointer transition-all group ${answers[question.id] === option
+                            ? 'border-accent-green bg-green-900/10'
+                            : 'border-gray-700 bg-gray-800/30 hover:bg-gray-800 hover:border-gray-600'
+                            } ${showResults && results[question.id]
+                              ? option === question.answer
+                                ? 'border-green-500 bg-green-900/20'
+                                : answers[question.id] === option
+                                  ? 'border-red-500 bg-red-900/20'
+                                  : ''
+                              : ''
+                            }`}
+                        >
+                          <div className={`w-5 h-5 rounded-full border-2 mr-4 flex items-center justify-center transition-colors ${answers[question.id] === option ? 'border-accent-green' : 'border-gray-600 group-hover:border-gray-500'
+                            }`}>
+                            {answers[question.id] === option && <div className="w-2.5 h-2.5 rounded-full bg-accent-green" />}
+                          </div>
+                          <input
+                            type="radio"
+                            name={question.id}
+                            value={option}
+                            checked={answers[question.id] === option}
+                            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                            disabled={showResults}
+                            className="hidden"
+                          />
+                          <span className="text-gray-300">{option}</span>
+                          {showResults && option === question.answer && (
+                            <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
+                          )}
+                          {showResults &&
+                            answers[question.id] === option &&
+                            option !== question.answer && (
+                              <XCircle className="w-5 h-5 text-red-500 ml-auto" />
+                            )}
+                        </label>
+                      ))}
+                    </div>
+                  ) : (
+                    <textarea
+                      className="w-full p-4 border border-gray-700 rounded-xl bg-gray-900/50 text-white placeholder-gray-600 focus:ring-2 focus:ring-accent-green focus:border-transparent resize-none transition-all"
+                      rows={3}
+                      placeholder="Type your answer in English..."
+                      value={answers[question.id] || ''}
+                      onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                      disabled={showResults}
+                    />
+                  )}
+
+                  {showResults && results[question.id] && (
+                    <div
+                      className={`mt-4 p-4 rounded-xl ${results[question.id].isCorrect
+                        ? 'bg-green-900/20 border border-green-800'
+                        : 'bg-red-900/20 border border-red-800'
+                        }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        {results[question.id].isCorrect ? (
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-red-500 mt-0.5" />
+                        )}
+                        <div>
+                          <p className={`font-bold mb-1 ${results[question.id].isCorrect ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                            {results[question.id].isCorrect ? 'Correct' : 'Incorrect'}
+                          </p>
+                          <p className="text-sm text-gray-300">
+                            {results[question.id].feedback}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              <div className="pt-6 flex items-center justify-between border-t border-gray-800">
+                {!showResults ? (
+                  <Button
+                    onClick={handleSubmitAnswers}
+                    loading={isCheckingAnswers}
+                    disabled={Object.keys(answers).length === 0}
+                    className="bg-accent-green hover:bg-green-600 text-white w-full md:w-auto py-3 px-8 text-lg"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Submit Answers
+                  </Button>
+                ) : (
+                  <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+                    <div className="text-xl font-bold bg-gray-800 px-6 py-3 rounded-xl border border-gray-700 w-full md:w-auto text-center">
+                      Score:{' '}
+                      <span
+                        className={
+                          calculateScore >= 70
+                            ? 'text-green-400'
+                            : calculateScore >= 40
+                              ? 'text-yellow-400'
+                              : 'text-red-400'
+                        }
+                      >
+                        {calculateScore}
+                      </span>
+                    </div>
+                    <div className="flex gap-3 w-full md:w-auto ml-auto">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setAnswers({});
+                          setResults({});
+                          setShowResults(false);
+                        }}
+                        className="flex-1 border-gray-600 text-gray-300 hover:bg-gray-800"
+                      >
+                        Rewrite
+                      </Button>
+                      <Button
+                        onClick={generateReadingContent}
+                        className="flex-1 bg-accent-green hover:bg-green-600 text-white"
+                      >
+                        <ChevronRight className="w-4 h-4 mr-1" />
+                        Next Article
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
