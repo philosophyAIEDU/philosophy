@@ -16,18 +16,18 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-      <div className="flex items-center justify-between h-full px-4">
+    <header className="relative z-50 h-20 bg-white/80 dark:bg-primary-900/80 backdrop-blur-md border-b border-primary-200 dark:border-primary-800 transition-colors duration-300">
+      <div className="flex items-center justify-between h-full px-6 max-w-7xl mx-auto">
         {/* Left section - Logo and mobile menu */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           {/* Mobile menu button */}
           <button
             onClick={onToggleSidebar}
-            className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="lg:hidden p-2 -ml-2 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors text-primary-600 dark:text-primary-300"
             aria-label="Toggle sidebar"
           >
             <svg
-              className="w-6 h-6 text-gray-600 dark:text-gray-300"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -42,58 +42,63 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
           </button>
 
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">A</span>
+          <div className="flex items-center gap-3 group">
+            <div className="w-10 h-10 bg-gradient-gold rounded-xl shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
+              <span className="text-primary-950 font-serif font-bold text-2xl">A</span>
             </div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              Amobe English
-            </h1>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-serif font-bold text-primary-900 dark:text-primary-50 leading-none">
+                Amobe English
+              </h1>
+              <span className="text-xs text-accent-goldDark dark:text-accent-gold tracking-widest uppercase font-medium mt-1">
+                Premium Learning
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Right section - Status and controls */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-4">
           {/* API Key Status */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
-            <Key className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+          <div className={`
+            flex items-center gap-2 px-4 py-2 rounded-full border backdrop-blur-sm transition-colors duration-300
+            ${isApiKeyValid
+              ? 'bg-green-50/50 border-green-200 text-green-700 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400'
+              : 'bg-red-50/50 border-red-200 text-red-700 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400'}
+          `}>
+            <Key className="w-4 h-4" />
+            <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wider">
+              {isApiKeyValid ? 'Connected' : 'No Key'}
+            </span>
             {isApiKeyValid ? (
-              <>
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                <span className="hidden sm:inline text-sm text-green-600 dark:text-green-400 font-medium">
-                  Connected
-                </span>
-              </>
+              <CheckCircle className="w-4 h-4" />
             ) : (
-              <>
-                <XCircle className="w-4 h-4 text-red-500" />
-                <span className="hidden sm:inline text-sm text-red-600 dark:text-red-400 font-medium">
-                  No API Key
-                </span>
-              </>
+              <XCircle className="w-4 h-4" />
             )}
           </div>
+
+          <div className="h-8 w-px bg-primary-200 dark:bg-primary-700 mx-2" />
 
           {/* Dark Mode Toggle */}
           <button
             onClick={handleDarkModeToggle}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-2.5 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 text-primary-600 dark:text-primary-400 transition-all duration-300 hover:scale-105 active:scale-95"
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {darkMode ? (
-              <Sun className="w-5 h-5 text-yellow-500" />
+              <Sun className="w-5 h-5 text-accent-gold" />
             ) : (
-              <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Moon className="w-5 h-5" />
             )}
           </button>
 
           {/* Settings Button */}
           <button
             onClick={onSettingsClick}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-2.5 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 text-primary-600 dark:text-primary-400 transition-all duration-300 hover:scale-105 active:scale-95"
             aria-label="Settings"
           >
-            <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+            <Settings className="w-5 h-5" />
           </button>
         </div>
       </div>

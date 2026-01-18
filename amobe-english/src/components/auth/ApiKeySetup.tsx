@@ -37,7 +37,7 @@ const ApiKeySetup: React.FC = () => {
 
     if (isValid) {
       setStatus('success');
-      setMessage('연결 성공! API 키가 유효합니다.');
+      setMessage('연결 성공! Premium Learning에 오신 것을 환영합니다.');
       await initializeApiKey(inputKey.trim());
     } else {
       setStatus('error');
@@ -52,98 +52,101 @@ const ApiKeySetup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-100 rounded-full mb-4">
-            <Key className="w-8 h-8 text-indigo-600" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Amobe English
-          </h1>
-          <p className="text-gray-600">
-            AI 영어 학습을 시작하려면 Gemini API 키가 필요합니다.
-          </p>
-        </div>
+    <div className="min-h-screen bg-primary-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 bg-gradient-luxury opacity-90" />
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-accent-gold/20 rounded-full blur-3xl" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl" />
 
-        <div className="space-y-6">
-          <div>
-            <label
-              htmlFor="apiKey"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Gemini API 키
-            </label>
-            <input
-              id="apiKey"
-              type="password"
-              value={inputKey}
-              onChange={(e) => setInputKey(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="AIza..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-              disabled={isLoading}
-            />
-          </div>
-
-          <button
-            onClick={handleTestConnection}
-            disabled={isLoading || !inputKey.trim()}
-            className="w-full py-3 px-4 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                연결 확인 중...
-              </>
-            ) : (
-              '테스트 연결'
-            )}
-          </button>
-
-          {status !== 'idle' && (
-            <div
-              className={`flex items-center gap-2 p-4 rounded-lg ${
-                status === 'success'
-                  ? 'bg-green-50 text-green-800'
-                  : 'bg-red-50 text-red-800'
-              }`}
-            >
-              {status === 'success' ? (
-                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-              ) : (
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
-              )}
-              <span className="text-sm">{message}</span>
+      <div className="relative z-10 w-full max-w-lg">
+        <div className="luxury-card rounded-2xl p-8 md:p-12 shadow-2xl backdrop-blur-xl border border-white/10">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-gold rounded-2xl mb-6 shadow-lg shadow-accent-gold/20 transform rotate-3">
+              <Key className="w-10 h-10 text-primary-950" />
             </div>
-          )}
+            <h1 className="text-4xl font-serif font-bold text-primary-50 mb-3 tracking-tight">
+              Amobe English
+            </h1>
+            <p className="text-accent-gold font-medium tracking-widest text-sm uppercase mb-4">
+              Premium AI Learning
+            </p>
+            <p className="text-primary-300 font-light text-lg">
+              Gemini API 키를 입력하여 학습을 시작하세요.
+            </p>
+          </div>
 
-          <div className="border-t border-gray-200 pt-6 space-y-4">
-            <a
-              href="https://aistudio.google.com/app/apikey"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium transition-colors"
-            >
-              <ExternalLink className="w-4 h-4" />
-              Google AI Studio에서 API 키 발급받기
-            </a>
-
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div className="flex items-start gap-2">
-                <Key className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-gray-600">
-                  API 키는 브라우저의 로컬 스토리지에 안전하게 저장됩니다.
-                  서버로 전송되지 않습니다.
-                </p>
+          <div className="space-y-8">
+            <div>
+              <label
+                htmlFor="apiKey"
+                className="block text-sm font-medium text-primary-200 mb-2 ml-1"
+              >
+                Gemini API Key
+              </label>
+              <div className="relative">
+                <input
+                  id="apiKey"
+                  type="password"
+                  value={inputKey}
+                  onChange={(e) => setInputKey(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="AIza..."
+                  className="w-full px-6 py-4 bg-primary-900/50 border border-primary-700 rounded-xl focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-50 placeholder-primary-600 transition-all outline-none"
+                  disabled={isLoading}
+                />
               </div>
+            </div>
 
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-amber-700">
-                  <strong>보안 주의:</strong> 공용 컴퓨터에서는 사용 후 반드시
-                  로그아웃하거나 브라우저 데이터를 삭제해주세요.
-                </p>
+            <button
+              onClick={handleTestConnection}
+              disabled={isLoading || !inputKey.trim()}
+              className="w-full py-4 px-6 bg-gradient-gold text-primary-950 font-bold text-lg rounded-xl hover:shadow-lg hover:shadow-accent-gold/30 focus:outline-none focus:ring-2 focus:ring-accent-gold focus:ring-offset-2 focus:ring-offset-primary-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                'Start Learning'
+              )}
+            </button>
+
+            {status !== 'idle' && (
+              <div
+                className={`flex items-center gap-3 p-4 rounded-xl border ${status === 'success'
+                    ? 'bg-green-900/20 border-green-800 text-green-400'
+                    : 'bg-red-900/20 border-red-800 text-red-400'
+                  } animate-fade-in`}
+              >
+                {status === 'success' ? (
+                  <CheckCircle className="w-5 h-5 flex-shrink-0" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                )}
+                <span className="text-sm font-medium">{message}</span>
+              </div>
+            )}
+
+            <div className="border-t border-primary-800 pt-8 space-y-4">
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 text-primary-400 hover:text-accent-gold transition-colors text-sm group"
+              >
+                <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                Get API Key from Google AI Studio
+              </a>
+
+              <div className="bg-primary-900/30 rounded-xl p-4 border border-primary-800/50">
+                <div className="flex items-start gap-3">
+                  <Key className="w-4 h-4 text-primary-500 mt-1 flex-shrink-0" />
+                  <p className="text-xs text-primary-400 leading-relaxed">
+                    API Key is stored securely in your browser's local storage and is never sent to our servers.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
