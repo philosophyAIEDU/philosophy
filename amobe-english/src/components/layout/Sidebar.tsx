@@ -8,6 +8,7 @@ import {
   BookOpen,
   BarChart2,
   X,
+  Play,
 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 
@@ -26,6 +27,13 @@ const navItems: NavItem[] = [
     icon: <Home className="w-5 h-5" />,
     path: '/',
     color: '#6B7280', // gray
+  },
+  {
+    id: 'ted',
+    label: 'TED 학습',
+    icon: <Play className="w-5 h-5" />,
+    path: '/ted',
+    color: '#EF4444', // red (TED brand color)
   },
   {
     id: 'listening',

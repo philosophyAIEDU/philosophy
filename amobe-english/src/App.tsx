@@ -7,6 +7,7 @@ import { LoadingSpinner, ErrorBoundary } from './components/common';
 
 // Lazy load route components for code splitting
 const LearningDashboard = lazy(() => import('./components/learning/LearningDashboard'));
+const TedLearning = lazy(() => import('./components/ted/TedLearning'));
 const ListeningModule = lazy(() => import('./components/learning/ListeningModule'));
 const ReadingModule = lazy(() => import('./components/learning/ReadingModule'));
 const WritingModule = lazy(() => import('./components/learning/WritingModule'));
@@ -56,6 +57,14 @@ function App() {
             element={
               <RouteWrapper>
                 <LearningDashboard />
+              </RouteWrapper>
+            }
+          />
+          <Route
+            path="/ted"
+            element={
+              <RouteWrapper>
+                <TedLearning />
               </RouteWrapper>
             }
           />
