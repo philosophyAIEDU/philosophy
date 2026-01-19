@@ -2,6 +2,8 @@
 import type { TedVideo, TedTranscript, TedVocabulary, TedQuiz, Subtitle } from '../types/ted';
 
 const STORAGE_KEY = 'amobe_ted_data';
+const STORAGE_VERSION_KEY = 'amobe_ted_version';
+const CURRENT_VERSION = 2; // 버전 업데이트 시 증가
 const FAVORITES_KEY = 'amobe_ted_favorites';
 const HISTORY_KEY = 'amobe_ted_history';
 
@@ -362,20 +364,34 @@ class TedService {
   }
 
   private loadData(): void {
-    // Load from localStorage or use sample data
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      this.videos = data.videos || sampleTedVideos;
-      this.transcripts = data.transcripts || sampleTranscripts;
-      this.vocabulary = data.vocabulary || sampleVocabulary;
-      this.quizzes = data.quizzes || sampleQuizzes;
-    } else {
+    // 버전 체크 - 버전이 다르면 샘플 데이터로 리셋
+    const storedVersion = localStorage.getItem(STORAGE_VERSION_KEY);
+    const needsReset = !storedVersion || parseInt(storedVersion) < CURRENT_VERSION;
+
+    if (needsReset) {
+      // 버전이 업데이트되었으므로 새 샘플 데이터 사용
       this.videos = sampleTedVideos;
       this.transcripts = sampleTranscripts;
       this.vocabulary = sampleVocabulary;
       this.quizzes = sampleQuizzes;
       this.saveData();
+      localStorage.setItem(STORAGE_VERSION_KEY, CURRENT_VERSION.toString());
+    } else {
+      // 기존 데이터 로드
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        const data = JSON.parse(stored);
+        this.videos = data.videos || sampleTedVideos;
+        this.transcripts = data.transcripts || sampleTranscripts;
+        this.vocabulary = data.vocabulary || sampleVocabulary;
+        this.quizzes = data.quizzes || sampleQuizzes;
+      } else {
+        this.videos = sampleTedVideos;
+        this.transcripts = sampleTranscripts;
+        this.vocabulary = sampleVocabulary;
+        this.quizzes = sampleQuizzes;
+        this.saveData();
+      }
     }
   }
 
