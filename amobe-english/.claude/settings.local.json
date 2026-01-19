@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [[ \"$CLAUDE_TOOL_INPUT\" == *\".tsx\"* ]] || [[ \"$CLAUDE_TOOL_INPUT\" == *\".ts\"* ]]; then npm run type-check --silent 2>/dev/null || echo '⚠️ TypeScript 타입 에러 확인 필요'; fi"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "type": "command",
+        "command": "echo '🔔 $CLAUDE_NOTIFICATION'"
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git *)",
+      "Read",
+      "Write(src/**)",
+      "Edit(src/**)",
+      "Write(.claude/**)",
+      "Edit(.claude/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)"
+    ]
+  }
+}
