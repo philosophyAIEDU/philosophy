@@ -5,20 +5,13 @@ import { MainLayout } from './components/layout';
 import ApiKeySetup from './components/auth/ApiKeySetup';
 import { LoadingSpinner, ErrorBoundary } from './components/common';
 
-// Lazy load route components for code splitting
-const LearningDashboard = lazy(() => import('./components/learning/LearningDashboard'));
+// Lazy load TED Learning component
 const TedLearning = lazy(() => import('./components/ted/TedLearning'));
-const ListeningModule = lazy(() => import('./components/learning/ListeningModule'));
-const ReadingModule = lazy(() => import('./components/learning/ReadingModule'));
-const WritingModule = lazy(() => import('./components/learning/WritingModule'));
-const SpeakingModule = lazy(() => import('./components/learning/SpeakingModule'));
-const VocabularyList = lazy(() => import('./components/vocabulary/VocabularyList'));
-const ProgressTracker = lazy(() => import('./components/progress/ProgressTracker'));
 
 // Page loading fallback component
 const PageLoader: React.FC = () => (
   <div className="flex items-center justify-center min-h-[60vh]">
-    <LoadingSpinner size="lg" text="Loading module..." />
+    <LoadingSpinner size="lg" text="Loading..." />
   </div>
 );
 
@@ -56,63 +49,7 @@ function App() {
             path="/"
             element={
               <RouteWrapper>
-                <LearningDashboard />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/ted"
-            element={
-              <RouteWrapper>
                 <TedLearning />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/listening"
-            element={
-              <RouteWrapper>
-                <ListeningModule />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/reading"
-            element={
-              <RouteWrapper>
-                <ReadingModule />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/writing"
-            element={
-              <RouteWrapper>
-                <WritingModule />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/speaking"
-            element={
-              <RouteWrapper>
-                <SpeakingModule />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/vocabulary"
-            element={
-              <RouteWrapper>
-                <VocabularyList />
-              </RouteWrapper>
-            }
-          />
-          <Route
-            path="/progress"
-            element={
-              <RouteWrapper>
-                <ProgressTracker />
               </RouteWrapper>
             }
           />
