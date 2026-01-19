@@ -1,15 +1,5 @@
 import React from 'react';
-import {
-  Home,
-  Headphones,
-  Book,
-  PenTool,
-  Mic,
-  BookOpen,
-  BarChart2,
-  X,
-  Play,
-} from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 
 interface NavItem {
@@ -22,60 +12,11 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   {
-    id: 'dashboard',
-    label: '대시보드',
-    icon: <Home className="w-5 h-5" />,
-    path: '/',
-    color: '#6B7280', // gray
-  },
-  {
     id: 'ted',
     label: 'TED 학습',
     icon: <Play className="w-5 h-5" />,
-    path: '/ted',
+    path: '/',
     color: '#EF4444', // red (TED brand color)
-  },
-  {
-    id: 'listening',
-    label: '듣기',
-    icon: <Headphones className="w-5 h-5" />,
-    path: '/listening',
-    color: '#3B82F6', // blue
-  },
-  {
-    id: 'reading',
-    label: '읽기',
-    icon: <Book className="w-5 h-5" />,
-    path: '/reading',
-    color: '#10B981', // green
-  },
-  {
-    id: 'writing',
-    label: '쓰기',
-    icon: <PenTool className="w-5 h-5" />,
-    path: '/writing',
-    color: '#F59E0B', // amber
-  },
-  {
-    id: 'speaking',
-    label: '말하기',
-    icon: <Mic className="w-5 h-5" />,
-    path: '/speaking',
-    color: '#EF4444', // red
-  },
-  {
-    id: 'vocabulary',
-    label: '단어장',
-    icon: <BookOpen className="w-5 h-5" />,
-    path: '/vocabulary',
-    color: '#8B5CF6', // purple
-  },
-  {
-    id: 'progress',
-    label: '학습 현황',
-    icon: <BarChart2 className="w-5 h-5" />,
-    path: '/progress',
-    color: '#EC4899', // pink
   },
 ];
 
@@ -133,8 +74,10 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="flex items-center gap-3 mb-10 text-xl font-serif font-bold text-white">
-          <div className="w-8 h-8 bg-accent-blue rounded-lg"></div>
-          Amobe
+          <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
+            <Play className="w-5 h-5 text-white" />
+          </div>
+          TED 영어학습
         </div>
 
         <nav className="flex-1 space-y-2 overflow-y-auto">
@@ -147,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 className={`
                     w-full flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all
                     ${active
-                    ? 'bg-gray-700/50 text-white shadow-sm'
+                    ? 'bg-red-500/20 text-red-400 shadow-sm border border-red-500/30'
                     : 'text-gray-400 hover:text-white hover:bg-gray-800'
                   }
                   `}
@@ -160,6 +103,16 @@ const Sidebar: React.FC<SidebarProps> = ({
             );
           })}
         </nav>
+
+        {/* 학습 가이드 */}
+        <div className="mt-6 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50">
+          <h4 className="text-sm font-medium text-white mb-2">학습 방법</h4>
+          <ol className="text-xs text-slate-400 space-y-1">
+            <li>1. 영상 선택</li>
+            <li>2. "학습하기" 버튼 클릭</li>
+            <li>3. 5단계 학습 진행</li>
+          </ol>
+        </div>
 
         <div className="text-xs text-green-400 flex items-center gap-2 mt-auto pt-6 border-t border-gray-800">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
