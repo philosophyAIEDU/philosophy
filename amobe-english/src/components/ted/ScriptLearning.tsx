@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   X, BookOpen, Headphones, Mic, PenTool, MessageSquare,
   Play, Pause, SkipBack, SkipForward, Volume2, Check,
   ChevronLeft, ChevronRight, Sparkles, Loader2, Eye, EyeOff,
-  RotateCcw, CheckCircle2, Circle, Languages, Lightbulb
+  CheckCircle2, Circle, Lightbulb
 } from 'lucide-react';
 import tedService from '../../services/tedService';
 import geminiService from '../../services/geminiService';
@@ -52,7 +52,6 @@ export const ScriptLearning: React.FC<ScriptLearningProps> = ({ video, onClose }
   // Script study state
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [showTranslation, setShowTranslation] = useState(false);
-  const [showAnalysis, setShowAnalysis] = useState(false);
 
   // Shadowing state
   const [shadowingIndex, setShadowingIndex] = useState(0);
@@ -164,11 +163,6 @@ Return ONLY valid JSON array (no markdown):
       utterance.onend = () => setIsPlaying(false);
       window.speechSynthesis.speak(utterance);
     }
-  };
-
-  const stopSpeaking = () => {
-    window.speechSynthesis.cancel();
-    setIsPlaying(false);
   };
 
   const checkSummary = async () => {
@@ -774,7 +768,7 @@ Keep feedback concise and helpful.`;
 
         {/* Step Tabs */}
         <div className="flex border-b border-slate-700/50 bg-slate-800/30 overflow-x-auto">
-          {LEARNING_STEPS.map((step, idx) => (
+          {LEARNING_STEPS.map((step) => (
             <button
               key={step.id}
               onClick={() => setCurrentStep(step.id)}
