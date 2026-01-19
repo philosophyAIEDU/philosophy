@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import {
   BookOpen, Volume2, Trash2, Search,
-  MessageSquare, Play, Pause
+  MessageSquare, Play, Pause, Loader2
 } from 'lucide-react';
 import tedService, { SavedWord, SavedSentence } from '../../services/tedService';
+import geminiService from '../../services/geminiService';
 
 type TabType = 'words' | 'sentences';
 
@@ -12,47 +13,75 @@ export const MyCollection: React.FC = () => {
   const [savedWords, setSavedWords] = useState<SavedWord[]>([]);
   const [savedSentences, setSavedSentences] = useState<SavedSentence[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [ttsLoading, setTtsLoading] = useState(false);
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     loadData();
-    const loadVoices = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      setVoices(availableVoices);
+    return () => {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.src = '';
+      }
     };
-    loadVoices();
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-    return () => window.speechSynthesis.cancel();
-  }, []);
+  }, [currentAudio]);
 
   const loadData = () => {
     setSavedWords(tedService.getSavedWords());
     setSavedSentences(tedService.getSavedSentences());
   };
 
-  const speakText = (text: string, rate: number = 0.9) => {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-
-    const preferredVoices = voices.filter(v =>
-      v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Samantha'))
-    );
-    if (preferredVoices.length > 0) {
-      utterance.voice = preferredVoices[0];
+  const speakText = async (text: string) => {
+    // Stop current audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      setCurrentAudio(null);
     }
 
-    utterance.onstart = () => setIsPlaying(true);
-    utterance.onend = () => setIsPlaying(false);
-    utterance.onerror = () => setIsPlaying(false);
+    if (isPlaying) {
+      setIsPlaying(false);
+      return;
+    }
 
-    setTimeout(() => window.speechSynthesis.speak(utterance), 100);
+    setTtsLoading(true);
+    setIsPlaying(true);
+
+    try {
+      const audioUrl = await geminiService.generateTTS(text, 'Kore');
+      const audio = new Audio(audioUrl);
+
+      audio.onended = () => {
+        setIsPlaying(false);
+        setCurrentAudio(null);
+      };
+
+      audio.onerror = () => {
+        setIsPlaying(false);
+        setTtsLoading(false);
+        setCurrentAudio(null);
+      };
+
+      setCurrentAudio(audio);
+      setTtsLoading(false);
+      await audio.play();
+    } catch (error) {
+      console.error('TTS error:', error);
+      setTtsLoading(false);
+      setIsPlaying(false);
+
+      // Fallback to Web Speech API
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.onstart = () => setIsPlaying(true);
+        utterance.onend = () => setIsPlaying(false);
+        utterance.onerror = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utterance);
+      }
+    }
   };
 
   const handleRemoveWord = (word: string, videoId: string) => {
@@ -161,8 +190,11 @@ export const MyCollection: React.FC = () => {
                       <button
                         onClick={() => speakText(word.word)}
                         className="flex items-center gap-2 hover:text-blue-400 transition-colors"
+                        disabled={ttsLoading}
                       >
-                        {isPlaying ? (
+                        {ttsLoading ? (
+                          <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                        ) : isPlaying ? (
                           <Pause className="w-4 h-4 text-blue-400" />
                         ) : (
                           <Volume2 className="w-4 h-4 text-blue-400" />
@@ -212,8 +244,11 @@ export const MyCollection: React.FC = () => {
                       <button
                         onClick={() => speakText(sentence.text)}
                         className="p-2 bg-green-500/20 hover:bg-green-500/30 rounded-lg text-green-400 flex-shrink-0"
+                        disabled={ttsLoading}
                       >
-                        {isPlaying ? (
+                        {ttsLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : isPlaying ? (
                           <Pause className="w-4 h-4" />
                         ) : (
                           <Play className="w-4 h-4" />

@@ -3,9 +3,12 @@ import { GEMINI_MODELS, GeminiConfig } from '../types/api';
 
 class GeminiService {
   private genAI: GoogleGenerativeAI | null = null;
+  private apiKey: string = '';
+  private audioCache: Map<string, string> = new Map(); // Cache for TTS audio URLs
 
   initialize(apiKey: string): void {
     this.genAI = new GoogleGenerativeAI(apiKey);
+    this.apiKey = apiKey;
   }
 
   isInitialized(): boolean {
@@ -58,25 +61,84 @@ class GeminiService {
     return JSON.parse(text) as T;
   }
 
-  // TTS - Generate audio from text
-  async generateTTS(text: string): Promise<Blob> {
-    const generativeModel = this.getModel({
-      model: GEMINI_MODELS.TTS,
-    });
-
-    const result = await generativeModel.generateContent({
-      contents: [{ role: 'user', parts: [{ text }] }],
-    });
-
-    // Get audio data from response
-    const response = result.response;
-    const audioData = (response as any).audio;
-
-    if (audioData) {
-      return new Blob([audioData], { type: 'audio/mp3' });
+  // TTS - Generate audio from text using Gemini TTS API
+  async generateTTS(text: string, voice: string = 'Kore'): Promise<string> {
+    if (!this.apiKey) {
+      throw new Error('API Key가 설정되지 않았습니다.');
     }
 
-    throw new Error('TTS 응답에서 오디오 데이터를 찾을 수 없습니다.');
+    // Check cache first
+    const cacheKey = `${text}-${voice}`;
+    if (this.audioCache.has(cacheKey)) {
+      return this.audioCache.get(cacheKey)!;
+    }
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${this.apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: `Say in a natural, clear voice: ${text}` }]
+          }],
+          generationConfig: {
+            responseModalities: ['AUDIO'],
+            speechConfig: {
+              voiceConfig: {
+                prebuiltVoiceConfig: {
+                  voiceName: voice
+                }
+              }
+            }
+          }
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'TTS 생성 실패');
+    }
+
+    const data = await response.json();
+
+    // Extract audio data from response
+    const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    const mimeType = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.mimeType || 'audio/mp3';
+
+    if (!audioData) {
+      throw new Error('TTS 응답에서 오디오 데이터를 찾을 수 없습니다.');
+    }
+
+    // Convert base64 to blob URL
+    const audioBlob = this.base64ToBlob(audioData, mimeType);
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    // Cache the result
+    this.audioCache.set(cacheKey, audioUrl);
+
+    return audioUrl;
+  }
+
+  private base64ToBlob(base64: string, mimeType: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+  }
+
+  // Play TTS audio
+  async playTTS(text: string, voice: string = 'Kore'): Promise<HTMLAudioElement> {
+    const audioUrl = await this.generateTTS(text, voice);
+    const audio = new Audio(audioUrl);
+    audio.play();
+    return audio;
   }
 
   // Fallback TTS using Web Speech API
@@ -96,6 +158,12 @@ class GeminiService {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
+  }
+
+  // Clear TTS cache
+  clearTTSCache(): void {
+    this.audioCache.forEach(url => URL.revokeObjectURL(url));
+    this.audioCache.clear();
   }
 
   // Start chat session for conversation

@@ -3,7 +3,7 @@ import {
   ArrowLeft, Play, Pause, Volume2,
   Bookmark, BookmarkCheck, BookOpen, Mic,
   PenTool, MessageSquare, ChevronLeft, ChevronRight,
-  Sparkles, Loader2, Eye, EyeOff, CheckCircle2, Circle,
+  Sparkles, Loader2 as LoaderIcon, Eye, EyeOff, CheckCircle2, Circle,
   Lightbulb, SkipBack, SkipForward, Check, RefreshCw
 } from 'lucide-react';
 import tedService from '../../services/tedService';
@@ -46,20 +46,19 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
   const [dictationInput, setDictationInput] = useState('');
   const [showDictationAnswer, setShowDictationAnswer] = useState(false);
 
-  // TTS voices
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  // TTS audio element
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+  const [ttsLoading, setTtsLoading] = useState(false);
 
+  // Cleanup audio on unmount
   useEffect(() => {
-    const loadVoices = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      setVoices(availableVoices);
+    return () => {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.src = '';
+      }
     };
-    loadVoices();
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-    return () => window.speechSynthesis.cancel();
-  }, []);
+  }, [currentAudio]);
 
   // Add to history
   useEffect(() => {
@@ -114,32 +113,62 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
     }
   };
 
-  const speakText = (text: string, rate: number = 0.9) => {
-    if (!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = rate;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-
-    // Find best English voice
-    const preferredVoices = voices.filter(v =>
-      v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Karen'))
-    );
-    if (preferredVoices.length > 0) {
-      utterance.voice = preferredVoices[0];
-    } else {
-      const anyEnglish = voices.find(v => v.lang.startsWith('en'));
-      if (anyEnglish) utterance.voice = anyEnglish;
+  const speakText = async (text: string, rate: number = 1.0) => {
+    // Stop current audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.src = '';
+      setCurrentAudio(null);
     }
 
-    utterance.onstart = () => setIsPlaying(true);
-    utterance.onend = () => setIsPlaying(false);
-    utterance.onerror = () => setIsPlaying(false);
+    if (isPlaying) {
+      setIsPlaying(false);
+      return;
+    }
 
-    setTimeout(() => window.speechSynthesis.speak(utterance), 100);
+    setTtsLoading(true);
+    setIsPlaying(true);
+
+    try {
+      // Use Gemini TTS API
+      const audioUrl = await geminiService.generateTTS(text, 'Kore');
+      const audio = new Audio(audioUrl);
+
+      // Adjust playback rate
+      audio.playbackRate = rate;
+
+      audio.onended = () => {
+        setIsPlaying(false);
+        setCurrentAudio(null);
+      };
+
+      audio.onerror = () => {
+        setIsPlaying(false);
+        setTtsLoading(false);
+        setCurrentAudio(null);
+        console.error('Audio playback error');
+      };
+
+      setCurrentAudio(audio);
+      setTtsLoading(false);
+      await audio.play();
+    } catch (error) {
+      console.error('TTS error:', error);
+      setTtsLoading(false);
+      setIsPlaying(false);
+
+      // Fallback to Web Speech API
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = rate;
+        utterance.onstart = () => setIsPlaying(true);
+        utterance.onend = () => setIsPlaying(false);
+        utterance.onerror = () => setIsPlaying(false);
+        window.speechSynthesis.speak(utterance);
+      }
+    }
   };
 
   const needsContent = !transcript || vocabulary.length === 0;
@@ -184,7 +213,7 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
             </button>
           ) : (
             <div className="flex items-center justify-center gap-2 text-purple-400">
-              <Loader2 className="w-5 h-5 animate-spin" />
+              <LoaderIcon className="w-5 h-5 animate-spin" />
               생성 중...
             </div>
           )}
@@ -348,10 +377,10 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
         <div className="bg-slate-800/70 rounded-2xl p-6 border border-slate-700/50">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <button onClick={() => speakText(currentSentence.text)} className="p-3 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl text-blue-400">
-                {isPlaying ? <Pause className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              <button onClick={() => speakText(currentSentence.text)} disabled={ttsLoading} className="p-3 bg-blue-500/20 hover:bg-blue-500/30 rounded-xl text-blue-400 disabled:opacity-50">
+                {ttsLoading ? <LoaderIcon className="w-5 h-5 animate-spin" /> : isPlaying ? <Pause className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
               </button>
-              <span className="text-sm text-slate-400">{isPlaying ? '재생 중...' : '클릭해서 듣기'}</span>
+              <span className="text-sm text-slate-400">{ttsLoading ? '로딩 중...' : isPlaying ? '재생 중...' : '클릭해서 듣기'}</span>
             </div>
             <button
               onClick={() => handleSaveSentence(currentSentence)}
@@ -425,12 +454,12 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
           <p className="text-2xl text-white text-center leading-relaxed mb-4">{currentSentence.text}</p>
           <p className="text-center text-slate-400 mb-6">{currentSentence.translation}</p>
           <div className="flex items-center justify-center gap-4">
-            <button onClick={() => speakText(currentSentence.text, 0.7)} className="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300">느리게</button>
-            <button onClick={() => speakText(currentSentence.text, 1.0)} className={`px-6 py-3 rounded-xl text-white font-medium ${isPlaying ? 'bg-purple-600' : 'bg-purple-500 hover:bg-purple-600'}`}>
-              {isPlaying ? <Pause className="w-5 h-5 inline mr-2" /> : <Volume2 className="w-5 h-5 inline mr-2" />}
-              {isPlaying ? '재생 중...' : '듣고 따라하기'}
+            <button onClick={() => speakText(currentSentence.text, 0.7)} disabled={ttsLoading || isPlaying} className="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 disabled:opacity-50">느리게</button>
+            <button onClick={() => speakText(currentSentence.text, 1.0)} disabled={ttsLoading} className={`px-6 py-3 rounded-xl text-white font-medium ${ttsLoading || isPlaying ? 'bg-purple-600' : 'bg-purple-500 hover:bg-purple-600'} disabled:opacity-70`}>
+              {ttsLoading ? <LoaderIcon className="w-5 h-5 inline mr-2 animate-spin" /> : isPlaying ? <Pause className="w-5 h-5 inline mr-2" /> : <Volume2 className="w-5 h-5 inline mr-2" />}
+              {ttsLoading ? '로딩 중...' : isPlaying ? '재생 중...' : '듣고 따라하기'}
             </button>
-            <button onClick={() => speakText(currentSentence.text, 1.2)} className="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300">빠르게</button>
+            <button onClick={() => speakText(currentSentence.text, 1.2)} disabled={ttsLoading || isPlaying} className="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 rounded-lg text-slate-300 disabled:opacity-50">빠르게</button>
           </div>
         </div>
 
@@ -472,10 +501,10 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
 
         <div className="bg-slate-800/70 rounded-2xl p-6">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <button onClick={() => speakText(dictationSentence.text, 0.8)} className={`p-4 rounded-xl ${isPlaying ? 'bg-blue-500 text-white' : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'}`}>
-              {isPlaying ? <Pause className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
+            <button onClick={() => speakText(dictationSentence.text, 0.8)} disabled={ttsLoading} className={`p-4 rounded-xl ${ttsLoading || isPlaying ? 'bg-blue-500 text-white' : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'} disabled:opacity-70`}>
+              {ttsLoading ? <LoaderIcon className="w-6 h-6 animate-spin" /> : isPlaying ? <Pause className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
             </button>
-            <span className="text-slate-400">{isPlaying ? '재생 중...' : '클릭해서 듣기'}</span>
+            <span className="text-slate-400">{ttsLoading ? '로딩 중...' : isPlaying ? '재생 중...' : '클릭해서 듣기'}</span>
           </div>
           <textarea
             value={dictationInput}
@@ -520,7 +549,7 @@ export const TedPlayer: React.FC<TedPlayerProps> = ({ video, onBack }) => {
     if (isGenerating) {
       return (
         <div className="flex flex-col items-center justify-center py-16">
-          <Loader2 className="w-12 h-12 text-purple-400 animate-spin mb-4" />
+          <LoaderIcon className="w-12 h-12 text-purple-400 animate-spin mb-4" />
           <p className="text-white font-medium">AI가 학습 자료를 생성하고 있습니다...</p>
         </div>
       );
