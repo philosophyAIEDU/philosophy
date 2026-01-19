@@ -6,6 +6,26 @@ const STORAGE_VERSION_KEY = 'amobe_ted_version';
 const CURRENT_VERSION = 2; // 버전 업데이트 시 증가
 const FAVORITES_KEY = 'amobe_ted_favorites';
 const HISTORY_KEY = 'amobe_ted_history';
+const SAVED_WORDS_KEY = 'amobe_saved_words';
+const SAVED_SENTENCES_KEY = 'amobe_saved_sentences';
+
+export interface SavedWord {
+  word: string;
+  pronunciation?: string;
+  meaning?: string;
+  meaningKo: string;
+  videoId: string;
+  videoTitle: string;
+  savedAt: string;
+}
+
+export interface SavedSentence {
+  text: string;
+  translation: string;
+  videoId: string;
+  videoTitle: string;
+  savedAt: string;
+}
 
 // 샘플 TED 영상 데이터 (실제로는 API나 사용자 입력으로 확장)
 const sampleTedVideos: TedVideo[] = [
@@ -549,6 +569,79 @@ class TedService {
     const tags = new Set<string>();
     this.videos.forEach(v => v.tags.forEach(t => tags.add(t)));
     return Array.from(tags).sort();
+  }
+
+  // Saved Words
+  getSavedWords(): SavedWord[] {
+    const stored = localStorage.getItem(SAVED_WORDS_KEY);
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  saveWord(word: SavedWord): void {
+    const words = this.getSavedWords();
+    // Prevent duplicates
+    if (!words.some(w => w.word === word.word && w.videoId === word.videoId)) {
+      words.unshift(word);
+      localStorage.setItem(SAVED_WORDS_KEY, JSON.stringify(words));
+    }
+  }
+
+  removeSavedWord(word: string, videoId: string): void {
+    const words = this.getSavedWords().filter(
+      w => !(w.word === word && w.videoId === videoId)
+    );
+    localStorage.setItem(SAVED_WORDS_KEY, JSON.stringify(words));
+  }
+
+  isWordSaved(word: string, videoId: string): boolean {
+    return this.getSavedWords().some(w => w.word === word && w.videoId === videoId);
+  }
+
+  // Saved Sentences
+  getSavedSentences(): SavedSentence[] {
+    const stored = localStorage.getItem(SAVED_SENTENCES_KEY);
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  saveSentence(sentence: SavedSentence): void {
+    const sentences = this.getSavedSentences();
+    // Prevent duplicates
+    if (!sentences.some(s => s.text === sentence.text && s.videoId === sentence.videoId)) {
+      sentences.unshift(sentence);
+      localStorage.setItem(SAVED_SENTENCES_KEY, JSON.stringify(sentences));
+    }
+  }
+
+  removeSavedSentence(text: string, videoId: string): void {
+    const sentences = this.getSavedSentences().filter(
+      s => !(s.text === text && s.videoId === videoId)
+    );
+    localStorage.setItem(SAVED_SENTENCES_KEY, JSON.stringify(sentences));
+  }
+
+  isSentenceSaved(text: string, videoId: string): boolean {
+    return this.getSavedSentences().some(s => s.text === text && s.videoId === videoId);
+  }
+
+  // Learning Statistics
+  getLearningStats() {
+    const history = this.getHistory();
+    const savedWords = this.getSavedWords();
+    const savedSentences = this.getSavedSentences();
+
+    const videosWatched = new Set(history.map(h => h.videoId)).size;
+    const totalStudyTime = history.reduce((acc, h) => {
+      const video = this.getVideoById(h.videoId);
+      return acc + (video ? video.duration : 0);
+    }, 0);
+
+    return {
+      videosWatched,
+      savedWordsCount: savedWords.length,
+      savedSentencesCount: savedSentences.length,
+      totalStudyTimeMinutes: Math.floor(totalStudyTime / 60),
+      recentHistory: history.slice(0, 10)
+    };
   }
 }
 

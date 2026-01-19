@@ -5,8 +5,10 @@ import { MainLayout } from './components/layout';
 import ApiKeySetup from './components/auth/ApiKeySetup';
 import { LoadingSpinner, ErrorBoundary } from './components/common';
 
-// Lazy load TED Learning component
+// Lazy load components
 const TedLearning = lazy(() => import('./components/ted/TedLearning'));
+const MyCollection = lazy(() => import('./components/ted/MyCollection'));
+const LearningProgress = lazy(() => import('./components/ted/LearningProgress'));
 
 // Page loading fallback component
 const PageLoader: React.FC = () => (
@@ -50,6 +52,22 @@ function App() {
             element={
               <RouteWrapper>
                 <TedLearning />
+              </RouteWrapper>
+            }
+          />
+          <Route
+            path="/collection"
+            element={
+              <RouteWrapper>
+                <MyCollection />
+              </RouteWrapper>
+            }
+          />
+          <Route
+            path="/progress"
+            element={
+              <RouteWrapper>
+                <LearningProgress />
               </RouteWrapper>
             }
           />

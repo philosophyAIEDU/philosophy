@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, X } from 'lucide-react';
+import { Play, X, BookOpen, BarChart3 } from 'lucide-react';
 import { useApp } from '../../contexts/AppContext';
 
 interface NavItem {
@@ -17,6 +17,20 @@ const navItems: NavItem[] = [
     icon: <Play className="w-5 h-5" />,
     path: '/',
     color: '#EF4444', // red (TED brand color)
+  },
+  {
+    id: 'collection',
+    label: '나의 모음',
+    icon: <BookOpen className="w-5 h-5" />,
+    path: '/collection',
+    color: '#8B5CF6', // purple
+  },
+  {
+    id: 'progress',
+    label: '학습현황',
+    icon: <BarChart3 className="w-5 h-5" />,
+    path: '/progress',
+    color: '#3B82F6', // blue
   },
 ];
 
@@ -109,7 +123,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           <h4 className="text-sm font-medium text-white mb-2">학습 방법</h4>
           <ol className="text-xs text-slate-400 space-y-1">
             <li>1. 영상 선택</li>
-            <li>2. "학습하기" 버튼 클릭</li>
+            <li>2. 학습 자료 생성</li>
             <li>3. 5단계 학습 진행</li>
           </ol>
         </div>
