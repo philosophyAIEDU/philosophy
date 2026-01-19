@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Play, Clock, Heart, Search, BookOpen, Headphones, Star, FileText } from 'lucide-react';
+import { Play, Clock, Heart, Search, BookOpen, Headphones, Star, GraduationCap } from 'lucide-react';
 import tedService from '../../services/tedService';
 import type { TedVideo } from '../../types/ted';
-import { TranscriptViewer } from './TranscriptViewer';
+import { ScriptLearning } from './ScriptLearning';
 
 interface TedBrowserProps {
   onSelectVideo: (video: TedVideo) => void;
@@ -13,11 +13,11 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [transcriptVideo, setTranscriptVideo] = useState<TedVideo | null>(null);
+  const [learningVideo, setLearningVideo] = useState<TedVideo | null>(null);
 
-  const handleViewTranscript = (e: React.MouseEvent, video: TedVideo) => {
+  const handleStartLearning = (e: React.MouseEvent, video: TedVideo) => {
     e.stopPropagation();
-    setTranscriptVideo(video);
+    setLearningVideo(video);
   };
 
   const allVideos = tedService.getAllVideos();
@@ -237,13 +237,13 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
                     <span>단어</span>
                   </div>
                 </div>
-                {/* Transcript Button */}
+                {/* Learning Button */}
                 <button
-                  onClick={(e) => handleViewTranscript(e, video)}
-                  className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 text-xs transition-colors"
+                  onClick={(e) => handleStartLearning(e, video)}
+                  className="flex items-center gap-1 px-3 py-1.5 bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 border border-purple-500/30 rounded-lg text-purple-400 text-xs font-medium transition-all"
                 >
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>대본</span>
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>학습하기</span>
                 </button>
               </div>
             </div>
@@ -262,11 +262,11 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
         </div>
       )}
 
-      {/* Transcript Viewer Modal */}
-      {transcriptVideo && (
-        <TranscriptViewer
-          video={transcriptVideo}
-          onClose={() => setTranscriptVideo(null)}
+      {/* Script Learning Modal */}
+      {learningVideo && (
+        <ScriptLearning
+          video={learningVideo}
+          onClose={() => setLearningVideo(null)}
         />
       )}
     </div>
