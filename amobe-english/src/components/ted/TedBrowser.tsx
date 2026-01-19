@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { Play, Clock, Heart, Search, BookOpen, Headphones, Star } from 'lucide-react';
+import { Play, Clock, Heart, Search, BookOpen, Headphones, Star, FileText } from 'lucide-react';
 import tedService from '../../services/tedService';
 import type { TedVideo } from '../../types/ted';
+import { TranscriptViewer } from './TranscriptViewer';
 
 interface TedBrowserProps {
   onSelectVideo: (video: TedVideo) => void;
@@ -12,6 +13,12 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [transcriptVideo, setTranscriptVideo] = useState<TedVideo | null>(null);
+
+  const handleViewTranscript = (e: React.MouseEvent, video: TedVideo) => {
+    e.stopPropagation();
+    setTranscriptVideo(video);
+  };
 
   const allVideos = tedService.getAllVideos();
   const allTags = tedService.getAllTags();
@@ -215,19 +222,29 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
               </div>
 
               {/* Study Options */}
-              <div className="flex items-center gap-4 mt-4 pt-4 border-t border-slate-700/50">
-                <div className="flex items-center gap-1 text-slate-500 text-xs">
-                  <Headphones className="w-4 h-4" />
-                  <span>듣기</span>
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-700/50">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-1 text-slate-500 text-xs">
+                    <Headphones className="w-4 h-4" />
+                    <span>듣기</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-slate-500 text-xs">
+                    <BookOpen className="w-4 h-4" />
+                    <span>읽기</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-slate-500 text-xs">
+                    <Star className="w-4 h-4" />
+                    <span>단어</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 text-slate-500 text-xs">
-                  <BookOpen className="w-4 h-4" />
-                  <span>읽기</span>
-                </div>
-                <div className="flex items-center gap-1 text-slate-500 text-xs">
-                  <Star className="w-4 h-4" />
-                  <span>단어</span>
-                </div>
+                {/* Transcript Button */}
+                <button
+                  onClick={(e) => handleViewTranscript(e, video)}
+                  className="flex items-center gap-1 px-2 py-1 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-lg text-blue-400 text-xs transition-colors"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>대본</span>
+                </button>
               </div>
             </div>
           </div>
@@ -243,6 +260,14 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
           <h3 className="text-xl font-semibold text-white mb-2">검색 결과가 없습니다</h3>
           <p className="text-slate-400">다른 검색어나 필터를 시도해보세요</p>
         </div>
+      )}
+
+      {/* Transcript Viewer Modal */}
+      {transcriptVideo && (
+        <TranscriptViewer
+          video={transcriptVideo}
+          onClose={() => setTranscriptVideo(null)}
+        />
       )}
     </div>
   );
