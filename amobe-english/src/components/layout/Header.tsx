@@ -24,7 +24,7 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
           <button
             onClick={onToggleSidebar}
             className="lg:hidden p-2 -ml-2 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 transition-colors text-primary-600 dark:text-primary-300"
-            aria-label="Toggle sidebar"
+            aria-label="사이드바 토글"
           >
             <svg
               className="w-6 h-6"
@@ -51,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
                 Amobe English
               </h1>
               <span className="text-xs text-accent-goldDark dark:text-accent-gold tracking-widest uppercase font-medium mt-1">
-                Premium Learning
+                프리미엄 학습
               </span>
             </div>
           </div>
@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
           `}>
             <Key className="w-4 h-4" />
             <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wider">
-              {isApiKeyValid ? 'Connected' : 'No Key'}
+              {isApiKeyValid ? '연결됨' : '키 없음'}
             </span>
             {isApiKeyValid ? (
               <CheckCircle className="w-4 h-4" />
@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
           <button
             onClick={handleDarkModeToggle}
             className="p-2.5 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 text-primary-600 dark:text-primary-400 transition-all duration-300 hover:scale-105 active:scale-95"
-            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label={darkMode ? '라이트 모드로 전환' : '다크 모드로 전환'}
           >
             {darkMode ? (
               <Sun className="w-5 h-5 text-accent-gold" />
@@ -96,7 +96,7 @@ const Header: React.FC<HeaderProps> = ({ onSettingsClick, onToggleSidebar }) => 
           <button
             onClick={onSettingsClick}
             className="p-2.5 rounded-full hover:bg-primary-100 dark:hover:bg-primary-800 text-primary-600 dark:text-primary-400 transition-all duration-300 hover:scale-105 active:scale-95"
-            aria-label="Settings"
+            aria-label="설정"
           >
             <Settings className="w-5 h-5" />
           </button>

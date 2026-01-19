@@ -221,23 +221,23 @@ const ListeningModule: React.FC = () => {
             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
-            <span>Back to Dashboard</span>
+            <span>대시보드로 돌아가기</span>
           </button>
           <div className="flex items-center gap-2 px-4 py-2 bg-accent-blue/10 text-accent-blue border border-accent-blue/20 rounded-full">
             <Headphones className="w-4 h-4" />
-            <span className="font-medium">Listening Practice</span>
+            <span className="font-medium">듣기 연습</span>
           </div>
         </div>
 
         {/* Main Content Card */}
         <div className="bg-navy-card rounded-2xl border border-gray-700 overflow-hidden shadow-xl">
           <div className="bg-gradient-to-r from-accent-blue/20 to-accent-blue/10 p-6 border-b border-gray-700">
-            <h2 className="text-2xl font-serif font-bold text-white mb-2">Dictation Practice</h2>
+            <h2 className="text-2xl font-serif font-bold text-white mb-2">받아쓰기 연습</h2>
             <p className="text-gray-400">
-              Listen to the audio and type what you hear.
-              {userLevel === 'beginner' && ' (Beginner - Simple Sentences)'}
-              {userLevel === 'intermediate' && ' (Intermediate - Daily Conversation)'}
-              {userLevel === 'advanced' && ' (Advanced - Complex Expressions)'}
+              오디오를 듣고 들은 내용을 입력하세요.
+              {userLevel === 'beginner' && ' (초급 - 간단한 문장)'}
+              {userLevel === 'intermediate' && ' (중급 - 일상 대화)'}
+              {userLevel === 'advanced' && ' (고급 - 복잡한 표현)'}
             </p>
           </div>
 
@@ -245,7 +245,7 @@ const ListeningModule: React.FC = () => {
             {/* Loading State */}
             {(isLoading || isGenerating) && (
               <div className="flex flex-col items-center justify-center py-12">
-                <LoadingSpinner size="lg" text="Generating content..." />
+                <LoadingSpinner size="lg" text="콘텐츠 생성 중..." />
               </div>
             )}
 
@@ -254,7 +254,7 @@ const ListeningModule: React.FC = () => {
               <div className="bg-red-900/20 border border-red-800 rounded-xl p-4">
                 <div className="flex items-center gap-2 text-red-400">
                   <XCircle className="w-5 h-5" />
-                  <span className="font-medium">An error occurred</span>
+                  <span className="font-medium">오류가 발생했습니다</span>
                 </div>
                 <p className="text-red-300 mt-2 text-sm">{error}</p>
                 <Button
@@ -264,7 +264,7 @@ const ListeningModule: React.FC = () => {
                   className="mt-3 border-red-700 text-red-300 hover:bg-red-900/50"
                 >
                   <RefreshCw className="w-4 h-4 mr-2" />
-                  Retry
+                  다시 시도
                 </Button>
               </div>
             )}
@@ -283,7 +283,7 @@ const ListeningModule: React.FC = () => {
                           ? 'bg-gray-700 text-gray-500'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                           }`}
-                        title={isMuted ? 'Unmute' : 'Mute'}
+                        title={isMuted ? '음소거 해제' : '음소거'}
                       >
                         {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                       </button>
@@ -312,7 +312,7 @@ const ListeningModule: React.FC = () => {
                           ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                           : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                           }`}
-                        title="Replay"
+                        title="다시 듣기"
                       >
                         <RotateCcw className="w-5 h-5" />
                       </button>
@@ -322,7 +322,7 @@ const ListeningModule: React.FC = () => {
                     <div className="flex items-center gap-3 bg-gray-900/50 p-1.5 rounded-lg border border-gray-700">
                       <div className="flex items-center gap-2 px-2">
                         <Gauge className="w-4 h-4 text-gray-400" />
-                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Speed</span>
+                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">속도</span>
                       </div>
                       <div className="flex gap-1">
                         {speedButtons.map((btn) => (
@@ -342,7 +342,7 @@ const ListeningModule: React.FC = () => {
 
                     {/* Attempts Counter */}
                     <p className="text-xs text-gray-500 font-mono">
-                      ATTEMPTS: {attemptsCount}
+                      시도 횟수: {attemptsCount}
                     </p>
                   </div>
                 </div>
@@ -352,7 +352,7 @@ const ListeningModule: React.FC = () => {
                   <div className="bg-yellow-900/10 border border-yellow-700/30 rounded-xl p-4">
                     <div className="flex items-center gap-2 text-yellow-500 mb-2">
                       <Lightbulb className="w-5 h-5" />
-                      <span className="font-medium font-serif">Hint</span>
+                      <span className="font-medium font-serif">힌트</span>
                     </div>
                     <p className="text-yellow-200/80 font-mono tracking-widest">{getHint()}</p>
                   </div>
@@ -361,12 +361,12 @@ const ListeningModule: React.FC = () => {
                 {/* Input Section */}
                 <div className="space-y-4">
                   <label className="block text-sm font-medium text-gray-400 ml-1">
-                    Type what you hear
+                    들은 내용을 입력하세요
                   </label>
                   <textarea
                     value={userInput}
                     onChange={(e) => setUserInput(e.target.value)}
-                    placeholder="Type the English sentence you heard..."
+                    placeholder="들은 영어 문장을 입력하세요..."
                     rows={3}
                     disabled={result?.isCorrect}
                     className="w-full px-5 py-4 bg-gray-800/50 border border-gray-600 rounded-xl focus:ring-2 focus:ring-accent-blue focus:border-accent-blue transition-colors resize-none disabled:opacity-50 disabled:cursor-not-allowed text-white placeholder-gray-500 text-lg"
@@ -379,7 +379,7 @@ const ListeningModule: React.FC = () => {
                       className="flex-1 sm:flex-none bg-accent-blue hover:bg-blue-600 text-white"
                     >
                       <Send className="w-4 h-4 mr-2" />
-                      Submit Answer
+                      정답 제출
                     </Button>
 
                     {!showHint && !result?.isCorrect && (
@@ -389,7 +389,7 @@ const ListeningModule: React.FC = () => {
                         className="border-gray-600 text-gray-300 hover:bg-gray-800"
                       >
                         <Lightbulb className="w-4 h-4 mr-2" />
-                        Show Hint
+                        힌트 보기
                       </Button>
                     )}
 
@@ -399,7 +399,7 @@ const ListeningModule: React.FC = () => {
                       className="bg-gray-700 text-white hover:bg-gray-600"
                     >
                       <RefreshCw className="w-4 h-4 mr-2" />
-                      New Sentence
+                      새 문장
                     </Button>
                   </div>
                 </div>
@@ -419,8 +419,8 @@ const ListeningModule: React.FC = () => {
                             <CheckCircle className="w-6 h-6 text-green-400" />
                           </div>
                           <div>
-                            <span className="text-lg font-bold text-green-400 block">Correct!</span>
-                            <span className="text-sm text-green-400/70">Great job listening.</span>
+                            <span className="text-lg font-bold text-green-400 block">정답입니다!</span>
+                            <span className="text-sm text-green-400/70">잘 들으셨네요.</span>
                           </div>
                         </>
                       ) : (
@@ -429,8 +429,8 @@ const ListeningModule: React.FC = () => {
                             <XCircle className="w-6 h-6 text-red-400" />
                           </div>
                           <div>
-                            <span className="text-lg font-bold text-red-400 block">Try Again</span>
-                            <span className="text-sm text-red-400/70">Accuracy: {Math.round(result.accuracy)}%</span>
+                            <span className="text-lg font-bold text-red-400 block">다시 시도해 보세요</span>
+                            <span className="text-sm text-red-400/70">정확도: {Math.round(result.accuracy)}%</span>
                           </div>
                         </>
                       )}
@@ -439,7 +439,7 @@ const ListeningModule: React.FC = () => {
                     {/* Highlighted Words */}
                     <div className="space-y-4">
                       <div className="bg-black/20 rounded-lg p-4">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Your Answer:</p>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">내 답변:</p>
                         <div className="flex flex-wrap gap-1.5 text-lg">
                           {result.highlights.map((highlight, index) => (
                             <span
@@ -456,7 +456,7 @@ const ListeningModule: React.FC = () => {
                       </div>
 
                       <div className="bg-black/20 rounded-lg p-4">
-                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Correct Answer:</p>
+                        <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">정답:</p>
                         <p className="text-lg text-white font-medium">
                           {result.correctAnswer}
                         </p>
@@ -468,7 +468,7 @@ const ListeningModule: React.FC = () => {
                         onClick={handleNextContent}
                         className="mt-6 w-full bg-green-600 hover:bg-green-500 text-white border-none py-3"
                       >
-                        Next Sentence
+                        다음 문장
                       </Button>
                     )}
                   </div>
@@ -480,23 +480,23 @@ const ListeningModule: React.FC = () => {
 
         {/* Tips Card */}
         <div className="bg-navy-card rounded-2xl p-6 border border-gray-700 shadow-lg">
-          <h3 className="font-serif font-bold text-white mb-4 border-b border-gray-700 pb-2">Learning Tips</h3>
+          <h3 className="font-serif font-bold text-white mb-4 border-b border-gray-700 pb-2">학습 팁</h3>
           <ul className="space-y-3 text-sm text-gray-400">
             <li className="flex items-start gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
-              <span>Start with a slower speed (0.75x) and gradually increase it.</span>
+              <span>느린 속도(0.75x)로 시작하고 점차 속도를 높여보세요.</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
-              <span>Listen multiple times to catch key words first.</span>
+              <span>여러 번 들으면서 핵심 단어를 먼저 파악하세요.</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
-              <span>Pay attention to red highlighted words to identify specific errors.</span>
+              <span>빨간색으로 표시된 단어에 주목하여 틀린 부분을 확인하세요.</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-blue mt-2 flex-shrink-0" />
-              <span>Use hints if you're stuck, but try to solve it yourself first!</span>
+              <span>막히면 힌트를 사용하되, 먼저 스스로 풀어보세요!</span>
             </li>
           </ul>
         </div>
