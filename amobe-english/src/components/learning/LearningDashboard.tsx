@@ -79,14 +79,14 @@ const LearningDashboard: React.FC = () => {
 
   return (
     <div className="p-4 lg:p-10 animate-fade-in text-white font-sans">
-      <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-8">Welcome Back, {userProfile?.name || 'Student'}.</h1>
+      <h1 className="text-3xl md:text-4xl font-serif font-semibold mb-8">다시 오신 것을 환영합니다, {userProfile?.name || '학습자'}님.</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Streak & Daily Goal */}
         <section className="col-span-1 lg:col-span-8 bg-navy-card rounded-2xl p-8 flex flex-col md:flex-row justify-between items-center shadow-lg border border-gray-700">
           <div className="mb-6 md:mb-0">
-            <p className="text-gray-400 uppercase tracking-widest text-sm mb-2">Streak Counter</p>
-            <h2 className="text-3xl font-serif">You are on a <span className="text-accent-yellow">{progress.streakDays} day streak</span></h2>
+            <p className="text-gray-400 uppercase tracking-widest text-sm mb-2">연속 학습</p>
+            <h2 className="text-3xl font-serif">현재 <span className="text-accent-yellow">{progress.streakDays}일 연속</span> 학습 중!</h2>
           </div>
           {/* Circular Progress */}
           <div className="relative w-32 h-32 flex items-center justify-center">
@@ -105,9 +105,9 @@ const LearningDashboard: React.FC = () => {
               />
             </svg>
             <div className="absolute text-center">
-              <p className="text-xs text-gray-400 uppercase">Daily Goal</p>
+              <p className="text-xs text-gray-400 uppercase">일일 목표</p>
               <p className="text-lg font-bold">
-                {todayMinutes} <span className="text-gray-500">/ {dailyGoal}m</span>
+                {todayMinutes} <span className="text-gray-500">/ {dailyGoal}분</span>
               </p>
             </div>
           </div>
@@ -116,47 +116,47 @@ const LearningDashboard: React.FC = () => {
         {/* Today's Focus */}
         <section className="col-span-1 lg:col-span-4 bg-navy-card rounded-2xl p-6 shadow-lg border border-gray-700">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-serif font-bold">Today's Focus</h3>
+            <h3 className="text-xl font-serif font-bold">오늘의 학습</h3>
             <Calendar size={18} className="text-gray-400" />
           </div>
           <ul className="space-y-4">
-            <FocusItem label="Morning News Listening" time="10m" checked={true} />
-            <FocusItem label="Vocabulary Review" time="5m" checked={false} />
-            <FocusItem label="Daily Journal" time="15m" checked={false} />
+            <FocusItem label="아침 뉴스 듣기" time="10분" checked={true} />
+            <FocusItem label="단어 복습" time="5분" checked={false} />
+            <FocusItem label="일기 쓰기" time="15분" checked={false} />
           </ul>
         </section>
 
         {/* Learning Cards Grid */}
         <div className="col-span-1 lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6">
           <LearningCard
-            title="Listening"
+            title="듣기"
             icon={<Headphones />}
             color="blue"
-            desc="Master English comprehension"
+            desc="영어 청해력 마스터하기"
             progress={40}
             onClick={() => navigate('/listening')}
           />
           <LearningCard
-            title="Reading"
+            title="읽기"
             icon={<BookOpen />}
             color="green"
-            desc="Expand vocabulary & context"
+            desc="어휘와 문맥 이해력 향상"
             progress={65}
             onClick={() => navigate('/reading')}
           />
           <LearningCard
-            title="Writing"
+            title="쓰기"
             icon={<PenTool />}
             color="yellow"
-            desc="Perfect your composition"
+            desc="완벽한 영작문 실력 기르기"
             progress={30}
             onClick={() => navigate('/writing')}
           />
           <LearningCard
-            title="Speaking"
+            title="말하기"
             icon={<Mic />}
             color="red"
-            desc="Fluency through conversation"
+            desc="대화를 통한 유창성 향상"
             progress={55}
             onClick={() => navigate('/speaking')}
           />
@@ -165,7 +165,7 @@ const LearningDashboard: React.FC = () => {
         {/* Weekly Growth Chart Placeholder */}
         <section className="col-span-1 lg:col-span-4 bg-navy-card rounded-2xl p-6 shadow-lg border border-gray-700">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-serif font-bold">Weekly Growth</h3>
+            <h3 className="text-xl font-serif font-bold">주간 성장</h3>
             <span className="text-green-400 font-bold">+12%</span>
           </div>
           <div className="h-40 flex items-end gap-2 px-2">

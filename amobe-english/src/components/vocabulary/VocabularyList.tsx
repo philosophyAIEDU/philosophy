@@ -49,9 +49,9 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
       completed: 'bg-green-900/30 text-green-400 border border-green-800/50',
     };
     const labels = {
-      new: 'New',
-      reviewing: 'Reviewing',
-      completed: 'Mastered',
+      new: '새 단어',
+      reviewing: '복습 중',
+      completed: '완료',
     };
     return (
       <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${styles[status]}`}>
@@ -67,9 +67,9 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
       advanced: 'bg-purple-900/30 text-purple-400 border border-purple-800/50',
     };
     const labels = {
-      beginner: 'Beginner',
-      intermediate: 'Intermediate',
-      advanced: 'Advanced',
+      beginner: '초급',
+      intermediate: '중급',
+      advanced: '고급',
     };
     return (
       <span className={`px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${styles[level]}`}>
@@ -148,10 +148,10 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
       <div className="bg-navy-card rounded-2xl border border-gray-700 p-12 text-center shadow-xl">
         <BookOpen className="w-16 h-16 mx-auto text-gray-600 mb-4" />
         <h3 className="text-xl font-serif font-bold text-white mb-2">
-          No words saved yet
+          저장된 단어가 없습니다
         </h3>
         <p className="text-gray-400">
-          Start learning and save words to build your vocabulary!
+          학습을 시작하고 단어를 저장하여 나만의 단어장을 만들어보세요!
         </p>
       </div>
     );
@@ -163,11 +163,11 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-3xl font-serif font-bold text-white mb-1">
-            My Vocabulary
+            내 단어장
           </h2>
           <p className="text-gray-400 flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            Total {vocabulary.length} words
+            총 {vocabulary.length}개 단어
           </p>
         </div>
         <div className="flex gap-2">
@@ -178,7 +178,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             onClick={() => setViewMode('list')}
           >
             <BookOpen size={16} className="mr-1" />
-            List
+            목록
           </Button>
           <Button
             className={viewMode === 'flashcard' ? 'bg-accent-blue text-white' : 'border-gray-600 text-gray-300 hover:text-white'}
@@ -191,7 +191,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             }}
           >
             <RotateCcw size={16} className="mr-1" />
-            Flashcards
+            플래시카드
           </Button>
           {onStartQuiz && (
             <Button
@@ -201,7 +201,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
               disabled={filteredVocabulary.length === 0}
             >
               <Brain size={16} className="mr-1" />
-              Start Quiz
+              퀴즈 시작
             </Button>
           )}
         </div>
@@ -216,10 +216,10 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             </div>
             <div>
               <h3 className="font-bold text-blue-100 text-lg">
-                Review for Today
+                오늘의 복습
               </h3>
               <p className="text-blue-300/80">
-                {todayReviewWords.length} words are ready for review
+                {todayReviewWords.length}개의 단어가 복습 대기 중입니다
               </p>
             </div>
           </div>
@@ -234,7 +234,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             ))}
             {todayReviewWords.length > 5 && (
               <span className="px-3 py-1.5 text-sm text-blue-400 flex items-center">
-                +{todayReviewWords.length - 5} more
+                +{todayReviewWords.length - 5}개 더
               </span>
             )}
           </div>
@@ -247,7 +247,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             }}
           >
             <Sparkles size={16} className="mr-1" />
-            Start Review Session
+            복습 시작하기
           </Button>
         </div>
       )}
@@ -262,7 +262,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             />
             <input
               type="text"
-              placeholder="Search words..."
+              placeholder="단어 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-700 rounded-xl bg-navy-card text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-accent-blue focus:border-transparent"
@@ -274,7 +274,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             className="flex-shrink-0 border-gray-700 text-gray-300 hover:bg-gray-800"
           >
             <Filter size={18} className="mr-1" />
-            Filters
+            필터
             {showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
           </Button>
         </div>
@@ -282,7 +282,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
         {showFilters && (
           <div className="flex gap-2 p-4 bg-gray-900/50 border border-gray-800 rounded-xl animate-fade-in">
             <span className="text-sm text-gray-400 self-center font-medium mr-2">
-              Level:
+              레벨:
             </span>
             {(['all', 'beginner', 'intermediate', 'advanced'] as const).map(
               (level) => (
@@ -295,8 +295,8 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
                     }`}
                 >
                   {level === 'all'
-                    ? 'All'
-                    : level.charAt(0).toUpperCase() + level.slice(1)}
+                    ? '전체'
+                    : level === 'beginner' ? '초급' : level === 'intermediate' ? '중급' : '고급'}
                 </button>
               )
             )}
@@ -325,7 +325,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
                 style={{ backfaceVisibility: 'hidden' }}
               >
                 <div className="absolute top-4 left-4">
-                  <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">Front</span>
+                  <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">앞면</span>
                 </div>
                 <button
                   onClick={(e) => {
@@ -347,7 +347,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
                   </p>
                 )}
 
-                <p className="text-sm text-gray-600 mt-8 animate-pulse">Click to flip</p>
+                <p className="text-sm text-gray-600 mt-8 animate-pulse">클릭하여 뒤집기</p>
               </div>
 
               {/* Back */}
@@ -359,7 +359,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
                 }}
               >
                 <div className="absolute top-4 left-4">
-                  <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">Back</span>
+                  <span className="text-gray-500 text-sm uppercase tracking-widest font-bold">뒷면</span>
                 </div>
                 <p className="text-3xl font-medium text-white mb-6 text-center">
                   {filteredVocabulary[currentFlashcardIndex].meaning}
@@ -400,7 +400,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
           {filteredVocabulary.length === 0 ? (
             <div className="bg-navy-card rounded-2xl border border-gray-700 p-8 text-center">
               <p className="text-gray-400">
-                No results found for your search.
+                검색 결과가 없습니다.
               </p>
             </div>
           ) : (
@@ -438,12 +438,12 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
                     <div className="flex items-center gap-6 pt-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-                          Mastery
+                          숙련도
                         </span>
                         {renderMasteryStars(item.masteryLevel)}
                       </div>
                       <span className="text-xs text-gray-500">
-                        Reviewed {item.reviewCount} times
+                        {item.reviewCount}회 복습
                       </span>
                     </div>
                   </div>
@@ -451,7 +451,7 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
                   <button
                     onClick={() => handleDelete(item.id)}
                     className="p-2 text-gray-600 hover:text-red-400 hover:bg-red-900/10 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                    title="Delete word"
+                    title="단어 삭제"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -469,25 +469,25 @@ const VocabularyList: React.FC<VocabularyListProps> = ({ onStartQuiz }) => {
             <p className="text-3xl font-bold text-blue-400 mb-1">
               {vocabulary.filter((v) => getReviewStatus(v) === 'new').length}
             </p>
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">New</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">새 단어</p>
           </div>
           <div>
             <p className="text-3xl font-bold text-yellow-400 mb-1">
               {vocabulary.filter((v) => getReviewStatus(v) === 'reviewing').length}
             </p>
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Reviewing</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">복습 중</p>
           </div>
           <div>
             <p className="text-3xl font-bold text-green-400 mb-1">
               {vocabulary.filter((v) => getReviewStatus(v) === 'completed').length}
             </p>
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Mastered</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">완료</p>
           </div>
           <div>
             <p className="text-3xl font-bold text-purple-400 mb-1">
               {todayReviewWords.length}
             </p>
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">To Review</p>
+            <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">복습 예정</p>
           </div>
         </div>
       </div>

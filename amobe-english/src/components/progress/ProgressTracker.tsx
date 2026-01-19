@@ -34,10 +34,10 @@ const MODULE_COLORS = {
 };
 
 const MODULE_LABELS = {
-  listening: 'Listening',
-  reading: 'Reading',
-  writing: 'Writing',
-  speaking: 'Speaking',
+  listening: '듣기',
+  reading: '읽기',
+  writing: '쓰기',
+  speaking: '말하기',
 };
 
 const MODULE_ICONS = {
@@ -48,9 +48,9 @@ const MODULE_ICONS = {
 };
 
 const LEVEL_LABELS = {
-  beginner: 'Beginner',
-  intermediate: 'Intermediate',
-  advanced: 'Advanced',
+  beginner: '초급',
+  intermediate: '중급',
+  advanced: '고급',
 };
 
 const ProgressTracker: React.FC = () => {
@@ -126,10 +126,10 @@ const ProgressTracker: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-serif font-bold text-white mb-1">
-            Learning Progress
+            학습 현황
           </h2>
           <p className="text-gray-400">
-            Track your English learning journey
+            영어 학습 여정을 확인하세요
           </p>
         </div>
         <Button
@@ -138,7 +138,7 @@ const ProgressTracker: React.FC = () => {
           size="sm"
         >
           <Calendar size={16} className="mr-1" />
-          This Week
+          이번 주
         </Button>
       </div>
 
@@ -152,7 +152,7 @@ const ProgressTracker: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-blue-200 font-medium">
-                Total Time
+                총 학습 시간
               </p>
               <p className="text-2xl font-bold text-white mt-1">
                 {formatMinutes(progress.totalMinutes)}
@@ -169,10 +169,10 @@ const ProgressTracker: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-orange-200 font-medium">
-                Streak
+                연속 학습
               </p>
               <p className="text-2xl font-bold text-white mt-1">
-                {progress.streakDays} days
+                {progress.streakDays}일
               </p>
             </div>
           </div>
@@ -186,7 +186,7 @@ const ProgressTracker: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-green-200 font-medium">
-                Sessions
+                학습 세션
               </p>
               <p className="text-2xl font-bold text-white mt-1">
                 {totalSessions}
@@ -203,7 +203,7 @@ const ProgressTracker: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-purple-200 font-medium">
-                Words
+                단어
               </p>
               <p className="text-2xl font-bold text-white mt-1">
                 {vocabulary.length}
@@ -222,10 +222,10 @@ const ProgressTracker: React.FC = () => {
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">
-                Current Level
+                현재 레벨
               </h3>
               <p className="text-sm text-gray-400">
-                Progress to next level
+                다음 레벨까지 진행도
               </p>
             </div>
           </div>
@@ -237,7 +237,7 @@ const ProgressTracker: React.FC = () => {
         </div>
         <div className="space-y-3">
           <div className="flex justify-between text-sm">
-            <span className="text-gray-400 font-medium">Progress</span>
+            <span className="text-gray-400 font-medium">진행도</span>
             <span className="font-bold text-indigo-300">
               {progress.levelProgress}%
             </span>
@@ -249,11 +249,11 @@ const ProgressTracker: React.FC = () => {
             />
           </div>
           <p className="text-xs text-gray-400 text-right font-medium">
-            {100 - progress.levelProgress}% to {progress.currentLevel === 'beginner'
-              ? 'Intermediate'
+            {progress.currentLevel === 'beginner'
+              ? '중급'
               : progress.currentLevel === 'intermediate'
-                ? 'Advanced'
-                : 'Master'}
+                ? '고급'
+                : '마스터'}까지 {100 - progress.levelProgress}%
           </p>
         </div>
       </div>
@@ -265,7 +265,7 @@ const ProgressTracker: React.FC = () => {
             <Target className="w-6 h-6 text-gray-400" />
           </div>
           <h3 className="text-xl font-serif font-bold text-white">
-            Module Breakdown
+            모듈별 현황
           </h3>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -293,11 +293,11 @@ const ProgressTracker: React.FC = () => {
                   <p className="text-2xl font-bold" style={{ color }}>
                     {stat.count}
                     <span className="text-sm font-medium text-gray-500 ml-1">
-                      times
+                      회
                     </span>
                   </p>
                   <p className="text-xs font-medium text-gray-500 uppercase tracking-widest">
-                    {formatMinutes(stat.minutes)} total
+                    총 {formatMinutes(stat.minutes)}
                   </p>
                 </div>
               </div>
@@ -311,7 +311,7 @@ const ProgressTracker: React.FC = () => {
         {/* Weekly Bar Chart */}
         <div className="bg-navy-card border border-gray-700 rounded-2xl p-6">
           <h3 className="text-xl font-serif font-bold text-white mb-6">
-            Weekly Activity
+            주간 활동
           </h3>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -346,7 +346,7 @@ const ProgressTracker: React.FC = () => {
         {/* Module Distribution Pie Chart */}
         <div className="bg-navy-card border border-gray-700 rounded-2xl p-6">
           <h3 className="text-xl font-serif font-bold text-white mb-6">
-            Time Distribution
+            시간 분배
           </h3>
           <div className="h-72 flex flex-col sm:flex-row items-center">
             <div className="w-full sm:w-1/2 h-48 sm:h-full">
@@ -397,13 +397,13 @@ const ProgressTracker: React.FC = () => {
             <Award className="w-6 h-6 text-amber-400" />
           </div>
           <h3 className="text-xl font-serif font-bold text-amber-100">
-            Weekly Goals
+            주간 목표
           </h3>
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
           <div className="bg-navy-card/80 border border-gray-700 rounded-xl p-4">
             <p className="text-sm text-gray-400 mb-2 font-medium">
-              Study Time
+              학습 시간
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-white">
@@ -418,20 +418,20 @@ const ProgressTracker: React.FC = () => {
           </div>
           <div className="bg-navy-card/80 border border-gray-700 rounded-xl p-4">
             <p className="text-sm text-gray-400 mb-2 font-medium">
-              Study Days
+              학습 일수
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-white">
                 {weeklyData.filter((d) => d.minutes > 0).length}
               </span>
               <span className="text-sm text-gray-500">
-                / 5 days
+                / 5일
               </span>
             </div>
           </div>
           <div className="bg-navy-card/80 border border-gray-700 rounded-xl p-4">
             <p className="text-sm text-gray-400 mb-2 font-medium">
-              New Words
+              새 단어
             </p>
             <div className="flex items-baseline gap-1">
               <span className="text-2xl font-bold text-white">

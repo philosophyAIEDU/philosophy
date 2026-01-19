@@ -22,49 +22,49 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     id: 'dashboard',
-    label: 'Dashboard',
+    label: '대시보드',
     icon: <Home className="w-5 h-5" />,
     path: '/',
     color: '#6B7280', // gray
   },
   {
     id: 'listening',
-    label: 'Listening',
+    label: '듣기',
     icon: <Headphones className="w-5 h-5" />,
     path: '/listening',
     color: '#3B82F6', // blue
   },
   {
     id: 'reading',
-    label: 'Reading',
+    label: '읽기',
     icon: <Book className="w-5 h-5" />,
     path: '/reading',
     color: '#10B981', // green
   },
   {
     id: 'writing',
-    label: 'Writing',
+    label: '쓰기',
     icon: <PenTool className="w-5 h-5" />,
     path: '/writing',
     color: '#F59E0B', // amber
   },
   {
     id: 'speaking',
-    label: 'Speaking',
+    label: '말하기',
     icon: <Mic className="w-5 h-5" />,
     path: '/speaking',
     color: '#EF4444', // red
   },
   {
     id: 'vocabulary',
-    label: 'Vocabulary',
+    label: '단어장',
     icon: <BookOpen className="w-5 h-5" />,
     path: '/vocabulary',
     color: '#8B5CF6', // purple
   },
   {
     id: 'progress',
-    label: 'Progress',
+    label: '학습 현황',
     icon: <BarChart2 className="w-5 h-5" />,
     path: '/progress',
     color: '#EC4899', // pink
@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         <div className="text-xs text-green-400 flex items-center gap-2 mt-auto pt-6 border-t border-gray-800">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          SYSTEM ONLINE
+          시스템 온라인
         </div>
       </aside>
     </>

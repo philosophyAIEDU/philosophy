@@ -68,11 +68,11 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             </div>
 
             <h2 className="text-2xl font-serif font-bold text-white mb-3">
-              Oops! Something went wrong
+              앗! 문제가 발생했습니다
             </h2>
 
             <p className="text-gray-400 mb-6">
-              We encountered an unexpected error. Don't worry, your progress is saved.
+              예기치 않은 오류가 발생했습니다. 걱정 마세요, 학습 진행 상황은 저장되었습니다.
             </p>
 
             {import.meta.env.DEV && this.state.error && (
@@ -83,7 +83,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 {this.state.errorInfo && (
                   <details className="text-gray-500 text-xs">
                     <summary className="cursor-pointer hover:text-gray-400">
-                      Component Stack
+                      컴포넌트 스택
                     </summary>
                     <pre className="mt-2 overflow-auto max-h-40">
                       {this.state.errorInfo.componentStack}
@@ -99,7 +99,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-accent-blue hover:bg-blue-600 text-white font-medium rounded-xl transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                Try Again
+                다시 시도
               </button>
 
               <button
@@ -107,7 +107,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-xl transition-colors"
               >
                 <Home className="w-4 h-4" />
-                Go Home
+                홈으로 이동
               </button>
             </div>
           </div>

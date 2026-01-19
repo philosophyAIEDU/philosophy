@@ -69,7 +69,7 @@ const ApiKeySetup: React.FC = () => {
               Amobe English
             </h1>
             <p className="text-accent-gold font-medium tracking-widest text-sm uppercase mb-4">
-              Premium AI Learning
+              프리미엄 AI 학습
             </p>
             <p className="text-primary-300 font-light text-lg">
               Gemini API 키를 입력하여 학습을 시작하세요.
@@ -106,10 +106,10 @@ const ApiKeySetup: React.FC = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="w-6 h-6 animate-spin" />
-                  Verifying...
+                  확인 중...
                 </>
               ) : (
-                'Start Learning'
+                '학습 시작하기'
               )}
             </button>
 
@@ -137,14 +137,14 @@ const ApiKeySetup: React.FC = () => {
                 className="flex items-center justify-center gap-2 text-primary-400 hover:text-accent-gold transition-colors text-sm group"
               >
                 <ExternalLink className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                Get API Key from Google AI Studio
+                Google AI Studio에서 API 키 발급받기
               </a>
 
               <div className="bg-primary-900/30 rounded-xl p-4 border border-primary-800/50">
                 <div className="flex items-start gap-3">
                   <Key className="w-4 h-4 text-primary-500 mt-1 flex-shrink-0" />
                   <p className="text-xs text-primary-400 leading-relaxed">
-                    API Key is stored securely in your browser's local storage and is never sent to our servers.
+                    API 키는 브라우저의 로컬 스토리지에 안전하게 저장되며, 서버로 전송되지 않습니다.
                   </p>
                 </div>
               </div>
