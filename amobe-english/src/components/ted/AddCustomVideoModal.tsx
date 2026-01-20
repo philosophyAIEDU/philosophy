@@ -18,6 +18,7 @@ export const AddCustomVideoModal: React.FC<AddCustomVideoModalProps> = ({ onClos
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFetchingInfo, setIsFetchingInfo] = useState(false);
 
   // 영상 정보 폼
   const [title, setTitle] = useState('');
@@ -26,7 +27,26 @@ export const AddCustomVideoModal: React.FC<AddCustomVideoModalProps> = ({ onClos
   const [level, setLevel] = useState<TedVideo['level']>('intermediate');
   const [tags, setTags] = useState('');
 
-  const handleUrlSubmit = () => {
+  // YouTube oEmbed API로 영상 정보 가져오기
+  const fetchYoutubeInfo = async (videoId: string) => {
+    try {
+      const response = await fetch(
+        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          title: data.title || '',
+          author: data.author_name || ''
+        };
+      }
+    } catch (err) {
+      console.error('Failed to fetch YouTube info:', err);
+    }
+    return null;
+  };
+
+  const handleUrlSubmit = async () => {
     setError(null);
     const id = extractYoutubeId(youtubeUrl.trim());
 
@@ -43,6 +63,16 @@ export const AddCustomVideoModal: React.FC<AddCustomVideoModalProps> = ({ onClos
     }
 
     setYoutubeId(id);
+    setIsFetchingInfo(true);
+
+    // YouTube oEmbed API로 실제 정보 가져오기
+    const info = await fetchYoutubeInfo(id);
+    if (info) {
+      setTitle(info.title);
+      setSpeaker(info.author);
+    }
+
+    setIsFetchingInfo(false);
     setStep('preview');
   };
 
@@ -53,32 +83,36 @@ export const AddCustomVideoModal: React.FC<AddCustomVideoModalProps> = ({ onClos
     setError(null);
 
     try {
+      // 이미 제목과 연사 정보가 있으면 활용
+      const videoTitle = title || 'Unknown Title';
+      const videoAuthor = speaker || 'Unknown Speaker';
+
       const result = await geminiService.generateJSON<{
-        title: string;
-        speaker: string;
         description: string;
         tags: string[];
         level: string;
       }>(
-        `This is a TED Talk or educational video on YouTube. The YouTube video ID is: ${youtubeId}.
+        `This is a TED Talk or educational video on YouTube.
+Video Title: "${videoTitle}"
+Channel/Speaker: "${videoAuthor}"
 
-Based on common TED Talk patterns and the video ID, suggest realistic metadata for this video.
-If you cannot determine the actual content, provide generic but appropriate placeholder information.
+Based on the title and speaker, generate appropriate metadata for English learning purposes.
 
 Return ONLY valid JSON in this exact format:
 {
-  "title": "Suggested video title (in English)",
-  "speaker": "Speaker name (or 'Unknown Speaker' if unsure)",
   "description": "Brief description of the video topic (1-2 sentences in English)",
   "tags": ["tag1", "tag2", "tag3"],
   "level": "beginner" or "intermediate" or "advanced"
-}`,
+}
+
+For level, consider:
+- beginner: Simple vocabulary, slow pace, everyday topics
+- intermediate: Moderate vocabulary, normal pace, general topics
+- advanced: Complex vocabulary, fast pace, technical/academic topics`,
         'Respond with ONLY valid JSON, no markdown or code blocks.'
       );
 
       if (result) {
-        setTitle(result.title || '');
-        setSpeaker(result.speaker || '');
         setDescription(result.description || '');
         setTags(result.tags?.join(', ') || '');
         setLevel((result.level as TedVideo['level']) || 'intermediate');
@@ -212,10 +246,17 @@ Return ONLY valid JSON in this exact format:
 
               <button
                 onClick={handleUrlSubmit}
-                disabled={!youtubeUrl.trim()}
-                className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-500 text-white font-medium rounded-xl transition-all"
+                disabled={!youtubeUrl.trim() || isFetchingInfo}
+                className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-500 text-white font-medium rounded-xl transition-all flex items-center justify-center gap-2"
               >
-                다음
+                {isFetchingInfo ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    영상 정보 가져오는 중...
+                  </>
+                ) : (
+                  '다음'
+                )}
               </button>
             </div>
           )}
@@ -282,12 +323,12 @@ Return ONLY valid JSON in this exact format:
                 {isGenerating ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    AI가 정보를 생성 중...
+                    AI가 설명/태그/난이도 생성 중...
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5" />
-                    AI로 정보 자동 생성
+                    AI로 설명/태그/난이도 자동 생성
                   </>
                 )}
               </button>
