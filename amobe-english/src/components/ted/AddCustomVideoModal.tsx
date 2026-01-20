@@ -27,18 +27,22 @@ export const AddCustomVideoModal: React.FC<AddCustomVideoModalProps> = ({ onClos
   const [level, setLevel] = useState<TedVideo['level']>('intermediate');
   const [tags, setTags] = useState('');
 
-  // YouTube oEmbed API로 영상 정보 가져오기
+  // YouTube 영상 정보 가져오기 (noembed.com - CORS 지원)
   const fetchYoutubeInfo = async (videoId: string) => {
     try {
+      // noembed.com은 CORS를 지원하는 oEmbed 프록시 서비스
       const response = await fetch(
-        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`
+        `https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`
       );
       if (response.ok) {
         const data = await response.json();
-        return {
-          title: data.title || '',
-          author: data.author_name || ''
-        };
+        console.log('YouTube info fetched:', data);
+        if (data.title) {
+          return {
+            title: data.title || '',
+            author: data.author_name || ''
+          };
+        }
       }
     } catch (err) {
       console.error('Failed to fetch YouTube info:', err);
