@@ -5,3 +5,4 @@ export { TranscriptViewer } from './TranscriptViewer';
 export { ScriptLearning } from './ScriptLearning';
 export { MyCollection } from './MyCollection';
 export { LearningProgress } from './LearningProgress';
+export { AddCustomVideoModal } from './AddCustomVideoModal';
