@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
-import { Play, Clock, Heart, Search, BookOpen, Headphones, Star, GraduationCap } from 'lucide-react';
+import React, { useState, useMemo, useCallback } from 'react';
+import { Play, Clock, Heart, Search, BookOpen, Headphones, Star, GraduationCap, Plus, Trash2, Youtube } from 'lucide-react';
 import tedService from '../../services/tedService';
 import type { TedVideo } from '../../types/ted';
 import { ScriptLearning } from './ScriptLearning';
+import { AddCustomVideoModal } from './AddCustomVideoModal';
 
 interface TedBrowserProps {
   onSelectVideo: (video: TedVideo) => void;
@@ -13,14 +14,30 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedTag, setSelectedTag] = useState<string>('all');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showCustomOnly, setShowCustomOnly] = useState(false);
   const [learningVideo, setLearningVideo] = useState<TedVideo | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handleStartLearning = (e: React.MouseEvent, video: TedVideo) => {
     e.stopPropagation();
     setLearningVideo(video);
   };
 
+  const handleVideoAdded = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
+
+  const handleDeleteCustomVideo = (e: React.MouseEvent, videoId: string) => {
+    e.stopPropagation();
+    if (confirm('이 영상을 삭제하시겠습니까?')) {
+      tedService.removeCustomVideo(videoId);
+      setRefreshKey(prev => prev + 1);
+    }
+  };
+
   const allVideos = tedService.getAllVideos();
+  const customVideoCount = tedService.getCustomVideos().length;
   const allTags = tedService.getAllTags();
   const favorites = tedService.getFavorites();
 
@@ -47,8 +64,13 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
       videos = videos.filter(v => favorites.includes(v.id));
     }
 
+    // Custom videos filter
+    if (showCustomOnly) {
+      videos = videos.filter(v => tedService.isCustomVideo(v.id));
+    }
+
     return videos;
-  }, [allVideos, searchQuery, selectedLevel, selectedTag, showFavoritesOnly, favorites]);
+  }, [allVideos, searchQuery, selectedLevel, selectedTag, showFavoritesOnly, showCustomOnly, favorites, refreshKey]);
 
   const toggleFavorite = (e: React.MouseEvent, videoId: string) => {
     e.stopPropagation();
@@ -94,8 +116,15 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
             세계적인 강연으로 영어 실력을 키워보세요
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <span className="text-slate-400 text-sm">{filteredVideos.length}개 영상</span>
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-500/20"
+          >
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">영상 추가</span>
+          </button>
         </div>
       </div>
 
@@ -152,6 +181,22 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
               <Heart className={`w-5 h-5 ${showFavoritesOnly ? 'fill-red-400' : ''}`} />
               <span className="hidden md:inline">즐겨찾기</span>
             </button>
+
+            {/* Custom Videos Toggle */}
+            {customVideoCount > 0 && (
+              <button
+                onClick={() => setShowCustomOnly(!showCustomOnly)}
+                className={`px-4 py-3 rounded-xl border transition-all flex items-center gap-2 ${
+                  showCustomOnly
+                    ? 'bg-purple-500/20 border-purple-500/50 text-purple-400'
+                    : 'bg-slate-900/50 border-slate-600/50 text-slate-400 hover:text-white'
+                }`}
+              >
+                <Youtube className={`w-5 h-5`} />
+                <span className="hidden md:inline">내 영상</span>
+                <span className="text-xs bg-purple-500/30 px-1.5 py-0.5 rounded-full">{customVideoCount}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -190,17 +235,35 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
                 {tedService.formatDuration(video.duration)}
               </div>
 
-              {/* Favorite Button */}
-              <button
-                onClick={(e) => toggleFavorite(e, video.id)}
-                className="absolute top-3 right-3 p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
-              >
-                <Heart className={`w-5 h-5 ${tedService.isFavorite(video.id) ? 'fill-red-500 text-red-500' : 'text-white'}`} />
-              </button>
+              {/* Favorite & Delete Buttons */}
+              <div className="absolute top-3 right-3 flex items-center gap-2">
+                {tedService.isCustomVideo(video.id) && (
+                  <button
+                    onClick={(e) => handleDeleteCustomVideo(e, video.id)}
+                    className="p-2 bg-black/50 rounded-full hover:bg-red-500/70 transition-colors group/delete"
+                    title="영상 삭제"
+                  >
+                    <Trash2 className="w-5 h-5 text-white group-hover/delete:text-white" />
+                  </button>
+                )}
+                <button
+                  onClick={(e) => toggleFavorite(e, video.id)}
+                  className="p-2 bg-black/50 rounded-full hover:bg-black/70 transition-colors"
+                >
+                  <Heart className={`w-5 h-5 ${tedService.isFavorite(video.id) ? 'fill-red-500 text-red-500' : 'text-white'}`} />
+                </button>
+              </div>
 
-              {/* Level Badge */}
-              <div className={`absolute top-3 left-3 px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(video.level)}`}>
-                {getLevelText(video.level)}
+              {/* Level Badge & Custom Badge */}
+              <div className="absolute top-3 left-3 flex items-center gap-2">
+                <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getLevelColor(video.level)}`}>
+                  {getLevelText(video.level)}
+                </div>
+                {tedService.isCustomVideo(video.id) && (
+                  <div className="px-2 py-1 rounded-full text-xs font-medium border bg-purple-500/20 text-purple-400 border-purple-500/30">
+                    내 영상
+                  </div>
+                )}
               </div>
             </div>
 
@@ -267,6 +330,14 @@ export const TedBrowser: React.FC<TedBrowserProps> = ({ onSelectVideo }) => {
         <ScriptLearning
           video={learningVideo}
           onClose={() => setLearningVideo(null)}
+        />
+      )}
+
+      {/* Add Custom Video Modal */}
+      {showAddModal && (
+        <AddCustomVideoModal
+          onClose={() => setShowAddModal(false)}
+          onVideoAdded={handleVideoAdded}
         />
       )}
     </div>

@@ -8,6 +8,7 @@ const FAVORITES_KEY = 'amobe_ted_favorites';
 const HISTORY_KEY = 'amobe_ted_history';
 const SAVED_WORDS_KEY = 'amobe_saved_words';
 const SAVED_SENTENCES_KEY = 'amobe_saved_sentences';
+const CUSTOM_VIDEOS_KEY = 'amobe_custom_videos';
 
 export interface SavedWord {
   word: string;
@@ -25,6 +26,49 @@ export interface SavedSentence {
   videoId: string;
   videoTitle: string;
   savedAt: string;
+}
+
+// 유튜브 URL에서 비디오 ID 추출
+export function extractYoutubeId(url: string): string | null {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/ // 직접 ID 입력한 경우
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      return match[1];
+    }
+  }
+  return null;
+}
+
+// 유튜브 ID로 TedVideo 객체 생성
+export function createVideoFromYoutubeId(
+  youtubeId: string,
+  options: {
+    title: string;
+    speaker: string;
+    description?: string;
+    duration?: number;
+    level?: TedVideo['level'];
+    tags?: string[];
+  }
+): Omit<TedVideo, 'id'> {
+  return {
+    title: options.title,
+    speaker: options.speaker,
+    description: options.description || '',
+    duration: options.duration || 0,
+    thumbnailUrl: `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`,
+    videoUrl: `https://www.youtube.com/embed/${youtubeId}`,
+    youtubeId,
+    tags: options.tags || [],
+    level: options.level || 'intermediate',
+    views: 0,
+    publishedAt: new Date().toISOString().split('T')[0]
+  };
 }
 
 // 샘플 TED 영상 데이터 (실제로는 API나 사용자 입력으로 확장)
@@ -375,12 +419,14 @@ const sampleQuizzes: Record<string, TedQuiz[]> = {
 
 class TedService {
   private videos: TedVideo[] = [];
+  private customVideos: TedVideo[] = [];
   private transcripts: Record<string, TedTranscript> = {};
   private vocabulary: Record<string, TedVocabulary[]> = {};
   private quizzes: Record<string, TedQuiz[]> = {};
 
   constructor() {
     this.loadData();
+    this.loadCustomVideos();
   }
 
   private loadData(): void {
@@ -424,9 +470,30 @@ class TedService {
     }));
   }
 
+  private loadCustomVideos(): void {
+    const stored = localStorage.getItem(CUSTOM_VIDEOS_KEY);
+    if (stored) {
+      this.customVideos = JSON.parse(stored);
+    }
+  }
+
+  private saveCustomVideos(): void {
+    localStorage.setItem(CUSTOM_VIDEOS_KEY, JSON.stringify(this.customVideos));
+  }
+
   // Video methods
   getAllVideos(): TedVideo[] {
+    return [...this.videos, ...this.customVideos];
+  }
+
+  // 기본 영상만 반환
+  getDefaultVideos(): TedVideo[] {
     return this.videos;
+  }
+
+  // 커스텀 영상만 반환
+  getCustomVideos(): TedVideo[] {
+    return this.customVideos;
   }
 
   getVideoById(id: string): TedVideo | undefined {
@@ -459,6 +526,43 @@ class TedService {
     this.videos.push(newVideo);
     this.saveData();
     return newVideo;
+  }
+
+  // 커스텀 영상 추가
+  addCustomVideo(video: Omit<TedVideo, 'id'>): TedVideo {
+    const newVideo: TedVideo = {
+      ...video,
+      id: `custom-${Date.now()}`
+    };
+    this.customVideos.push(newVideo);
+    this.saveCustomVideos();
+    return newVideo;
+  }
+
+  // 커스텀 영상 삭제
+  removeCustomVideo(videoId: string): boolean {
+    const index = this.customVideos.findIndex(v => v.id === videoId);
+    if (index >= 0) {
+      this.customVideos.splice(index, 1);
+      this.saveCustomVideos();
+      // 관련 데이터도 삭제
+      delete this.transcripts[videoId];
+      delete this.vocabulary[videoId];
+      delete this.quizzes[videoId];
+      this.saveData();
+      return true;
+    }
+    return false;
+  }
+
+  // 커스텀 영상인지 확인
+  isCustomVideo(videoId: string): boolean {
+    return videoId.startsWith('custom-');
+  }
+
+  // 유튜브 ID로 영상 찾기 (중복 방지용)
+  getVideoByYoutubeId(youtubeId: string): TedVideo | undefined {
+    return this.getAllVideos().find(v => v.youtubeId === youtubeId);
   }
 
   // Transcript methods
